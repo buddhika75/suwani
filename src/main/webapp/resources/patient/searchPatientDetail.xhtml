@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="patient" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGrid columns="2" rendered="#{cc.attrs.patient!=null}">
+            <h:outputLabel value="Code" />
+            <h:outputLabel value="#{cc.attrs.patient.code}" />
+            <h:outputLabel value="Name" />
+            <h:outputLabel value="#{cc.attrs.patient.person.name}" />
+            <h:outputLabel value="Membership Scheme" />
+            <h:outputLabel value="#{cc.attrs.patient.person.membershipScheme.name}" />                                                    
+            <h:outputLabel value="Sex" />
+            <h:outputLabel value="#{cc.attrs.patient.person.sex}" />
+            <h:outputLabel value="DOB"  />
+            <h:outputLabel value="#{cc.attrs.patient.person.dob}"   >
+                <f:convertDateTime pattern="dd/MM/yy" />
+            </h:outputLabel>
+            <h:outputLabel  value="Adress" />
+            <h:outputLabel value="#{cc.attrs.patient.person.address}" />
+        </h:panelGrid>
+    </cc:implementation>
+</html>

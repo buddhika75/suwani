@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core" >
+
+    <body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+                <h:form >
+                    <p:panel >
+                        <f:facet name="header" >
+                            <h:outputLabel value="BHT Income by Categories" ></h:outputLabel>
+                        </f:facet>
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="From" ></h:outputLabel>
+                            <p:calendar value="#{inwardReportController.fromDate}" pattern="dd MMMM yyyy" ></p:calendar>
+                            <h:outputLabel value="To" ></h:outputLabel>
+                            <p:calendar value="#{inwardReportController.toDate}" pattern="dd MMMM yyyy" ></p:calendar>
+                            <h:outputLabel value="Admission Type" ></h:outputLabel>
+                            <p:selectOneMenu  id="lstAdmissionType"   value="#{inwardReportController.admissionType}" >
+                                <f:selectItem itemLabel="All Admission Types"/>
+                                <f:selectItems  value="#{admissionTypeController.items}" var="myItem" itemValue="#{myItem}" itemLabel="#{myItem.name}"></f:selectItems>
+                            </p:selectOneMenu>
+                            <h:outputLabel value="BHT Type" ></h:outputLabel>
+                            <p:selectOneMenu   id="cmbBhtType" value="#{inwardReportController.paymentMethod}"  >
+                                <f:selectItem itemLabel="All BHT Types" />                           
+                                <f:selectItems value="#{enumController.paymentMethodForAdmission}" />
+                            </p:selectOneMenu>
+                            <h:outputLabel value="Credit Company" ></h:outputLabel>
+                            <p:selectOneMenu  id="lstCc"   value="#{inwardReportController.institution}" >
+                                <f:selectItem itemLabel="All Credit Companies"/>
+                                <f:selectItems  value="#{creditCompanyController.creditCompanies}" var="cc" 
+                                                itemValue="#{cc}" itemLabel="#{cc.name}"></f:selectItems>
+                            </p:selectOneMenu>
+
+
+                        </h:panelGrid>
+
+                        <p:commandButton ajax="false" value="Process" action="#{inwardReportController.listDischargedBhtIncomeByCategories()}" ></p:commandButton>
+
+                        <p:dataTable value="#{inwardReportController.incomeByCategoryRecords}" var="rec" >
+                            <p:column headerText="Category" >
+                                <h:outputLabel value="#{rec.category.name}" ></h:outputLabel>
+                            </p:column>
+                            <p:column headerText="Amount"  style="text-align: right; padding: 5px;" >
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{inwardReportController.grossTotals}" >
+                                        <f:convertNumber pattern="##0.00" ></f:convertNumber>
+                                    </h:outputLabel>
+                                </f:facet>
+
+                                <h:outputLabel value="#{rec.grossAmount}" >
+                                    <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                </h:outputLabel>
+                            </p:column>
+                             <p:column headerText="Margin"  style="text-align: right; padding: 5px;"  >                              
+                                <h:outputLabel value="#{rec.matrix}" >
+                                    <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                </h:outputLabel>
+                            </p:column>
+
+                            <p:column headerText="Discount"  style="text-align: right; padding: 5px;"  >
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{inwardReportController.discounts}" >
+                                        <f:convertNumber pattern="##0.00" ></f:convertNumber>
+                                    </h:outputLabel>
+                                </f:facet>
+
+                                <h:outputLabel value="#{rec.discount}" >
+                                    <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                </h:outputLabel>
+                            </p:column>
+                            
+                            <p:column headerText="Net Amount" style="text-align: right; padding: 5px;" >
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{inwardReportController.netTotals}" >
+                                        <f:convertNumber pattern="##0.00" ></f:convertNumber>
+                                    </h:outputLabel>
+                                </f:facet>
+                                <h:outputLabel value="#{rec.netAmount}" >
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputLabel>
+                            </p:column>
+
+                        </p:dataTable>
+
+
+                    </p:panel>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
