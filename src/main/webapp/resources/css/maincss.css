@@ -5,7 +5,7 @@ http://www.freecsstemplates.org
 Released for free under a Creative Commons Attribution 2.5 License
 */
 
-/*html{
+html{
     min-width: 100%;
     min-height: 100%;
     margin: 0px;
@@ -19,7 +19,7 @@ body {
     font-size: 13px;
     min-width: 100%;
     min-height: 100%;
-}*/
+}
 
 .test{
     background-color: palegreen;

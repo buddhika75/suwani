@@ -70,7 +70,37 @@ public class SessionController implements Serializable, HttpSessionListener {
     Institution institution;
     @EJB
     private CashTransactionBean cashTransactionBean;
+    
+    String billNo;
+    String phoneNo;
+    Boolean customerLogged;
 
+    public String getBillNo() {
+        return billNo;
+    }
+
+    public void setBillNo(String billNo) {
+        this.billNo = billNo;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public Boolean getCustomerLogged() {
+        return customerLogged;
+    }
+
+    public void setCustomerLogged(Boolean customerLogged) {
+        this.customerLogged = customerLogged;
+    }
+
+    
+    
     public void update() {
         getFacede().edit(getLoggedUser());
         getCashTransactionBean().updateDrawers();
@@ -569,7 +599,7 @@ public class SessionController implements Serializable, HttpSessionListener {
 
     public String getPrimeTheme() {
         if (primeTheme == null || primeTheme.equals("")) {
-            primeTheme = "hot-sneaks";
+            primeTheme = "glass-x";
         }
         if (getLoggedUser() != null) {
             if (getLoggedUser().getPrimeTheme() != null) {
