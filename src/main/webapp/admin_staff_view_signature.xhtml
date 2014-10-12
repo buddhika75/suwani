@@ -18,6 +18,11 @@
                             <p:column headerText="Name" >
                                 <h:outputLabel value="#{s.person.nameWithTitle}" ></h:outputLabel>
                             </p:column>
+                            
+                            <p:column headerText="Staff Code" >
+                                <p:outputLabel value="#{s.id}"/>
+                            </p:column>
+                            
                             <p:column headerText="Name" >
                                 <p:graphicImage  value="#{staffImageController.signatureById}" style="height: 50px;" >
                                     <f:param name="id" value="#{s.id}" />

@@ -107,7 +107,7 @@ public class ApplicationController {
             Calendar c=Calendar.getInstance();
             c.set(Calendar.YEAR, 2020);
             c.set(Calendar.MONTH, 0);
-            c.set(Calendar.DATE, 1);
+            c.set(Calendar.DAY_OF_MONTH, 1);
             storesExpiery=c.getTime();
         }
         return storesExpiery;
