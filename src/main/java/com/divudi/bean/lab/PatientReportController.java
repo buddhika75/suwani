@@ -94,6 +94,36 @@ public class PatientReportController implements Serializable {
     List<PatientReportItemValue> patientReportItemValuesDynamicLabels;
     List<PatientReportItemValue> patientReportItemValuesCalculations;
 
+    List<PatientReport> customerReports = new ArrayList<>();
+
+    public List<PatientReport> getCustomerReports() {
+        return customerReports;
+    }
+
+    public void setCustomerReports(List<PatientReport> customerReports) {
+        this.customerReports = customerReports;
+    }
+    
+    
+    
+    
+    public String fillPatientReports(){
+        String sql;
+        Map m = new HashMap();
+        m.put("phone", getSessionController().getPhoneNo());
+        m.put("billno", getSessionController().getBillNo().toUpperCase());
+        sql = "select pr from PatientReport pr where pr.retired=false and "
+                + "upper(pr.patientInvestigation.billItem.bill.patient.person.phone)=:phone and "
+                + "upper(pr.patientInvestigation.billItem.bill.deptId)=:billno "
+                + "order by pr.dataEntryAt desc ";
+        System.out.println("m = " + m);
+        System.out.println("sql = " + sql);
+        customerReports = getFacade().findBySQL(sql, m);
+        System.out.println("customerReports.size() = " + customerReports.size());
+        return "/index";
+    }
+    
+    
     public String patientReportSearch() {
         if (currentPatientReport == null || currentPatientReport.getPatientInvestigation() == null || currentPatientReport.getPatientInvestigation().getPatient() == null) {
             return "";

@@ -23,7 +23,7 @@
                 <h:form>
                     <script type="text/javascript" language="JavaScript">
                         var $ = jQuery;
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             $("input[id*='TimeStamp']").mask('99 99 9999 99 99 aa');
                             $("input[id*='DateOnly']").mask('99 99 9999');
                             $("input[id*='DateOnlyShort']").mask('99 99 99');
@@ -52,7 +52,7 @@
                         </p:ajaxStatus>
 
                         <h:panelGroup rendered="#{sessionController.logged}" style="border: 1px solid;border-radius: 6px;" 
-                                      styleClass="nonPrintBlock" >
+                                 styleClass="nonPrintBlock" >
                             <f:facet name="header" >
                                 <h:outputLabel value="#{labels.topic}" />
                             </f:facet>
@@ -506,157 +506,43 @@
 
                     </div>
                 </h:panelGroup>
-
-
                 <p:panel rendered ="#{!sessionController.logged}" style="min-height: 500px; padding: 50px;" styleClass="nonPrintBlock">
                     <ui:insert name="login"   >
+                        <p:panel header="Please login" id="loginbox" style="margin-left: 20%;margin-right: 20%; text-align: center; ">
+                            <h:panelGrid columns="2" >
+                                <h:panelGroup >
+                                    <h:graphicImage  library="image" name="lock.png" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <h:form id="formLogin">
+                                        <h:panelGrid columns="2">
 
-                        <p:tabView >
-
-                            <p:tab title="My Reports" >
-
-                                <p:panel header="Please Enter Details" id="myreportsbox" style="margin-left: 20%;margin-right: 20%; text-align: center; ">
-                                    <h:panelGrid columns="2" >
-                                        <h:panelGroup >
-                                            <h:graphicImage  library="image" name="lock.png" />
-                                        </h:panelGroup>
-                                        <h:panelGroup >
-                                            <h:form id="formReports">
-                                                <h:panelGrid columns="2">
-                                                    <p:outputLabel value="Bill No" ></p:outputLabel>
-                                                    <p:inputText value="#{sessionController.billNo}" ></p:inputText>
-                                                    <p:outputLabel value="Phone No" ></p:outputLabel>
-
-                                                    <p:inputMask mask="999-9999999" id="txtNewPtPhone" 
-                                                                 maxlength="11" 
-                                                                 value="#{sessionController.phoneNo}">
-                                                    </p:inputMask>
-                                                    
-                                                    <p:outputLabel value="" ></p:outputLabel>
-                                                    <p:commandButton ajax="false" value= "View My Reports" action="#{patientReportController.fillPatientReports}" ></p:commandButton>
-                                                </h:panelGrid>
-
-                                                <p:dataTable value="#{patientReportController.customerReports}" var="dpr"  styleClass="noBorderGrid" >
-            
-                                                    <p:column >
-                                                        <h:panelGrid columns="6" styleClass="noBorderGrid">
-                                                            <p:commandLink id="cmdOldReport" style="text-decoration:underline;" 
-                                                                           value="#{dpr.item.name}" 
-                                                                           ajax="false" action="/lab/lab_patient_report_print_customer">
-                                                                <f:setPropertyActionListener value="#{dpr}" target="#{patientReportController.currentPatientReport}"></f:setPropertyActionListener>
-                                                            </p:commandLink>
-
-                                                            <p:commandLink id="cmdOldReportEdit" ajax="false" action="/lab/lab_patient_report_print_customer">
-                                                                <f:setPropertyActionListener value="#{dpr}" target="#{patientReportController.currentPatientReport}"></f:setPropertyActionListener>
-                                                                <p:graphicImage library="image/icon" styleClass="standedicon" name="data_entry.png" ></p:graphicImage>
-                                                            </p:commandLink>
-
-                                                            <p:commandLink id="cmdOldReportPrint" ajax="false" action="/lab/lab_patient_report_print_customer">
-                                                                <p:graphicImage library="image/icon" name="print.jpg" styleClass="standedicon" ></p:graphicImage>
-                                                                <f:setPropertyActionListener value="#{dpr}" target="#{patientReportController.currentPatientReport}"></f:setPropertyActionListener>
-                                                            </p:commandLink>
-
-                                                            <p:graphicImage id="imgApproved" library="image/icon" name="approved_icon.png" 
-                                                                            style="height: 30px; width: 30px; #{dpr.approved ? '':'opacity: 0.1;'}" ></p:graphicImage>
-                                                            <p:graphicImage id="imgPrinted" library="image/icon" name="print_ok.png" 
-                                                                            style="height: 30px; width: 30px;#{dpr.printed ? '':'opacity: 0.1;'}" ></p:graphicImage>
-                                                        </h:panelGrid>
-
-
-                                                        <p:tooltip for="imgApproved" >
-                                                            <h:outputLabel value="Approved" styleClass="#{dpr.approved ? 'greentext':'yellowtext'}" >
-                                                            </h:outputLabel>
-                                                        </p:tooltip>
-                                                        <p:tooltip for="imgPrinted" >
-                                                            <h:outputLabel value="Printed" styleClass="#{dpr.approved ? 'greentext':'yellowtext'}" >
-                                                            </h:outputLabel>
-                                                        </p:tooltip>
-                                                        <p:tooltip for="cmdOldReportPrint" >
-                                                            <h:outputLabel value="To Print" styleClass="#{dpr.approved ? 'greentext':'yellowtext'}" >
-                                                            </h:outputLabel>
-                                                        </p:tooltip>
-                                                        <p:tooltip for="cmdOldReport cmdOldReportEdit" >
-                                                            <h:outputLabel value="To Edit, Approve or Print" styleClass="#{dpr.approved ? 'greentext':'yellowtext'}" >
-                                                            </h:outputLabel>
-                                                            <br/>
-                                                            <h:outputLabel value="#{dpr.item.name}" styleClass="#{dpr.approved ? 'greentext':'yellowtext'}" >
-                                                            </h:outputLabel>
-                                                            <br/>
-                                                            <h:outputLabel value="Data enterd at " ></h:outputLabel>
-                                                            <h:outputLabel value="#{dpr.dataEntryAt}" >
-                                                                <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                                            </h:outputLabel>
-                                                            <br/>
-                                                            <h:outputLabel value="Approved at " rendered="#{dpr.approved}" ></h:outputLabel>
-                                                            <h:outputLabel value="#{dpr.approveAt}"  rendered="#{dpr.approved}" >
-                                                                <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                                            </h:outputLabel>
-                                                            <br/>
-                                                            <h:outputLabel value="Printed at "  rendered="#{dpr.printed}" ></h:outputLabel>
-                                                            <h:outputLabel value="#{dpr.printingAt}"  rendered="#{dpr.printed}" >
-                                                                <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                                            </h:outputLabel>
-                                                        </p:tooltip>
-
-
-                                                    </p:column>
-                                                </p:dataTable>
-
-
-
-                                            </h:form>
-                                        </h:panelGroup>
-                                    </h:panelGrid>
-                                </p:panel>
-
-                            </p:tab>
-
-                            <p:tab title="Staff Login" >
-
-
-                                <p:panel header="Please login" id="loginbox" style="margin-left: 20%;margin-right: 20%; text-align: center; ">
-                                    <h:panelGrid columns="2" >
-                                        <h:panelGroup >
-                                            <h:graphicImage  library="image" name="lock.png" />
-                                        </h:panelGroup>
-                                        <h:panelGroup >
-                                            <h:form id="formLogin">
-                                                <h:panelGrid columns="2">
-
-                                                    <h:outputLabel value="Department" style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
-                                                    <p:autoComplete value="#{sessionController.department}" 
-                                                                    style="text-align: left; margin: 5px; padding: 5px; max-width: 300px!important;" 
-                                                                    completeMethod="#{departmentController.completeDeptWithDeptOrIns}"
-                                                                    var="dept" itemValue="#{dept}" itemLabel="#{dept.name}"
-                                                                    forceSelection="true" rendered="true"
-                                                                    requiredMessage="You must select a department" 
-                                                                    converter="dep">
-                                                        <p:column headerText="Department">
-                                                            <h:outputLabel value="#{dept.name}"/>
-                                                        </p:column>
-                                                        <p:column headerText="Institution">
-                                                            <h:outputLabel value="#{dept.institution.name}"/>
-                                                        </p:column>
-                                                    </p:autoComplete>
-                                                    <h:outputLabel value="Username"  style="text-align: left; margin: 5px; padding: 5px;"  ></h:outputLabel>
-                                                    <p:inputText autocomplete="off"   value="#{sessionController.userName}"  style="text-align: left; margin: 5px; padding: 5px;" ></p:inputText>
-                                                    <h:outputLabel value="Password"  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
-                                                    <p:password value="#{sessionController.passord }"  style="text-align: left; margin: 5px; padding: 5px;" ></p:password>
-                                                    <h:outputLabel value=""  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
-                                                    <p:commandButton value="Login" action="#{sessionController.loginAction()}" ajax="false" ></p:commandButton>
-                                                </h:panelGrid>
-                                            </h:form>
-                                        </h:panelGroup>
-                                    </h:panelGrid>
-                                </p:panel>
-
-
-                            </p:tab>
-
-                        </p:tabView>
-
-
-
+                                            <h:outputLabel value="Department" style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
+                                            <p:autoComplete value="#{sessionController.department}" 
+                                                            style="text-align: left; margin: 5px; padding: 5px; max-width: 300px!important;" 
+                                                            completeMethod="#{departmentController.completeDeptWithDeptOrIns}"
+                                                            var="dept" itemValue="#{dept}" itemLabel="#{dept.name}"
+                                                            forceSelection="true" rendered="true"
+                                                            requiredMessage="You must select a department" 
+                                                            converter="dep">
+                                                <p:column headerText="Department">
+                                                    <h:outputLabel value="#{dept.name}"/>
+                                                </p:column>
+                                                <p:column headerText="Institution">
+                                                    <h:outputLabel value="#{dept.institution.name}"/>
+                                                </p:column>
+                                            </p:autoComplete>
+                                            <h:outputLabel value="Username"  style="text-align: left; margin: 5px; padding: 5px;"  ></h:outputLabel>
+                                            <p:inputText autocomplete="off"   value="#{sessionController.userName}"  style="text-align: left; margin: 5px; padding: 5px;" ></p:inputText>
+                                            <h:outputLabel value="Password"  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
+                                            <p:password value="#{sessionController.passord }"  style="text-align: left; margin: 5px; padding: 5px;" ></p:password>
+                                            <h:outputLabel value=""  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
+                                            <p:commandButton value="Login" action="#{sessionController.loginAction()}" ajax="false" ></p:commandButton>
+                                        </h:panelGrid>
+                                    </h:form>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:panel>
                     </ui:insert>
                 </p:panel>
 
