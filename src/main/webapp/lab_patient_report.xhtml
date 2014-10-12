@@ -291,7 +291,7 @@
                                         <p:graphicImage rendered="#{myCli.reportItemType eq 'AutherizedSignature' and myCli.retired eq false and patientReportController.currentPatientReport.approveUser.staff.id ne null }"    value="#{staffImageController.signatureById}" style="width: #{myCli.cssWidth}; max-height: 50px!important;"  >
                                             <f:param name="id" value="#{patientReportController.currentPatientReport.approveUser.staff.id}" />
                                         </p:graphicImage>
-
+                                        
                                     </div>
                                 </ui:repeat>
 
