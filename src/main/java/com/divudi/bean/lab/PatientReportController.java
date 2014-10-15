@@ -47,6 +47,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.TemporalType;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.primefaces.event.CellEditEvent;
 
@@ -105,6 +106,16 @@ public class PatientReportController implements Serializable {
     }
     
     
+    List<PatientInvestigation> customerPis;
+
+    public List<PatientInvestigation> getCustomerPis() {
+        return customerPis;
+    }
+
+    public void setCustomerPis(List<PatientInvestigation> customerPis) {
+        this.customerPis = customerPis;
+    }
+    
     
     
     public String fillPatientReports(){
@@ -112,15 +123,14 @@ public class PatientReportController implements Serializable {
         Map m = new HashMap();
         m.put("phone", getSessionController().getPhoneNo());
         m.put("billno", getSessionController().getBillNo().toUpperCase());
-        sql = "select pr from PatientReport pr where pr.retired=false and "
-                + "upper(pr.patientInvestigation.billItem.bill.patient.person.phone)=:phone and "
-                + "upper(pr.patientInvestigation.billItem.bill.deptId)=:billno "
-                + "order by pr.dataEntryAt desc ";
+        sql = "select pr from PatientInvestigation pr where pr.retired=false and "
+                + "upper(pr.billItem.bill.patient.person.phone)=:phone and "
+                + "upper(pr.billItem.bill.deptId)=:billno "
+                + "order by pr.id desc ";
         System.out.println("m = " + m);
         System.out.println("sql = " + sql);
-        customerReports = getFacade().findBySQL(sql, m);
-        System.out.println("customerReports.size() = " + customerReports.size());
-        return "/index";
+        customerPis = getPiFacade().findBySQL(sql, m,50);
+        return "/reports_list";
     }
     
     

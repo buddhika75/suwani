@@ -16,6 +16,7 @@
 
         <h:form>
 
+
             <div id="background">
                 <div id="page">
                     <div id="header">
@@ -45,103 +46,49 @@
                     </div>
                     <!-- /#header -->
                     <div id="contents">
-                        <div id="blogs">
+                        <div id="main">
+                            <div  >
+                                <p> Fill the Details and click the button to view your reports </p>
+                                <table >
+                                    <tr style="vertical-align: middle; text-align: left;">
+                                        <td>
+                                            <p> Bill No</p>
+                                        </td>
+                                        <td>
+                                            <p> <h:inputText value="#{sessionController.billNo}" ></h:inputText> </p>
+                                        </td>
+                                    </tr>
+                                    <tr style="vertical-align: middle; text-align: left;">
+                                        <td>
+                                            <p> Phone No </p>
+                                        </td>
+                                        <td>
+                                            <p>     <h:inputText value="#{sessionController.phoneNo}" ></h:inputText> </p>
+                                        </td>
+                                    </tr>
 
-                            <div class="blog-entry-buttons" >
+                                    <tr>
+                                        <td colspan="2"  style="vertical-align: middle; text-align: center;">
+                                            <h:commandButton class ="default-button" value= "View My Reports" action="#{patientReportController.fillPatientReports}" ></h:commandButton>
+                                        </td>
+                                    </tr>
 
-                                <h3>Fill the Deatils and click the button to view your reports</h3>
-
-                                <h:panelGrid columns="2">
-                                    <p:outputLabel value="Bill No" ></p:outputLabel>
-                                    <p:inputText value="#{sessionController.billNo}" ></p:inputText>
-                                    <p:outputLabel value="Phone No" ></p:outputLabel>
-
-                                    <p:inputMask mask="999-9999999" id="txtNewPtPhone" 
-                                                 maxlength="11" 
-                                                 value="#{sessionController.phoneNo}">
-                                    </p:inputMask>
-
-                                    <p:outputLabel value="" ></p:outputLabel>
-                                    <h:commandLink  class="blog-entry-buttons"  value= "View" action="#{patientReportController.fillPatientReports}" ></h:commandLink>
-
-
-                                </h:panelGrid>
-
-                                <div class="defaultTable" >
-                                    <table  >
-                                        <tr>
-                                            <td>
-                                                Billed At
-                                            </td>
-                                            <td>
-                                                Reported At
-                                            </td>
-                                            <td>
-                                                Printed At
-                                            </td>
-                                        </tr>
-                                        <ui:repeat value="#{patientReportController.customerReports}" var="dpr"   >
-                                            <tr>
-                                                <td>sdfsdf</td>
-                                            </tr>
-
-                                        </ui:repeat>
-
-                                    </table>
-                                </div>
-
-                                <h:dataTable value="#{patientReportController.customerReports}" var="dpr"  styleClass="noBorderGrid" >
-
-                                    <h:column  >
-                                        <p:commandLink id="cmdReport" style="text-decoration:underline;" 
-                                                       value="#{dpr.item.name}" 
-                                                       ajax="false" action="/lab/lab_patient_report_print_customer">
-                                            <f:setPropertyActionListener value="#{dpr}" target="#{patientReportController.currentPatientReport}"></f:setPropertyActionListener>
-                                        </p:commandLink>
-                                    </h:column>
-                                    <h:column  >
-                                        <h:outputLabel value="#{dpr.patientInvestigation.billItem.bill.createdAt}"  rendered="#{dpr.approved}" >
-                                            <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                        </h:outputLabel>
-                                    </h:column>
-                                    <h:column  >
-                                        <h:outputLabel value="#{dpr.createdAt}"   >
-                                            <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                        </h:outputLabel>
-                                    </h:column>
-                                    <h:column  >
-                                        <h:outputLabel value="#{dpr.approveAt}"  rendered="#{dpr.approved}" >
-                                            <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                        </h:outputLabel>
-                                        <p:graphicImage id="imgApproved" library="image/icon" name="approved_icon.png" 
-                                                        style="height: 30px; width: 30px; #{dpr.approved ? '':'opacity: 0.1;'}" ></p:graphicImage>
-                                    </h:column>
-                                    <h:column  >
-                                        <h:outputLabel value="#{dpr.printingAt}"  rendered="#{dpr.printed}" >
-                                            <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
-                                        </h:outputLabel>
-
-                                        <p:graphicImage id="imgPrinted" library="image/icon" name="print_ok.png" 
-                                                        style="height: 30px; width: 30px;#{dpr.printed ? '':'opacity: 0.1;'}" ></p:graphicImage>
-                                    </h:column>
-                                </h:dataTable>
+                                </table>
 
 
 
                             </div>
-
-
-
-
                         </div>
                     </div>
                     <!-- /#contents -->
                     <div id="footer">
                         <div id="description">
-                            <div> <a href="index.html" class="logo"></a> <span>Copyright &copy; 2012 <a href="#">Company Name</a> All rights reserved | Website Template By <a target="_blank" href="http://www.freewebsitetemplates.com/">freewebsitetemplates.com</a></span> </div>
-                            <p> This website template has been designed by Free Website Templates for you, for free. You can replace all this text with your own text. You can remove any link to our website from this website template, you're free to use this website template without linking back to us. If you're having problems editing this website template, then don't hesitate to ask for help on the Forum. </p>
+                            <div> 
+                                <a href="http://www.lakmedi.com" class="logo"></a> 
+                                <span>Copyright &copy; 2012 <a href="http://www.lakmedi.com">Lakmedipro Pvt Ltd</a> 
+                                    All rights reserved
+                                </span></div>
                         </div>
-                        <div class="navigation"> <a href="index.html">Home</a>| <a href="about.html">About</a>| <a href="blog.html">Blog</a>| <a href="shop.html">Shop</a>| <a href="contact-us.html">Contact Us</a> </div>
                     </div>
                     <!-- /#footer -->
                 </div>
