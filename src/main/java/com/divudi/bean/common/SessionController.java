@@ -348,12 +348,30 @@ public class SessionController implements Serializable, HttpSessionListener {
 
     }
 
+   String loggedUserName;
+
+    public String getLoggedUserName() {
+        return loggedUserName;
+    }
+
+    public void setLoggedUserName(String loggedUserName) {
+        this.loggedUserName = loggedUserName;
+    }
+   
+   
+    
     private boolean checkUsers() {
+   
+        
         String temSQL;
         temSQL = "SELECT u FROM WebUser u WHERE u.retired = false";
         List<WebUser> allUsers = getFacede().findBySQL(temSQL);
         for (WebUser u : allUsers) {
-            if (getSecurityController().decrypt(u.getName()).equalsIgnoreCase(userName)) {
+            loggedUserName =getSecurityController().decrypt(u.getName());
+            if(loggedUserName==null){
+                loggedUserName = "";
+            }
+            if (loggedUserName.equalsIgnoreCase(userName)) {
                 if (getSecurityController().matchPassword(passord, u.getWebUserPassword())) {
                     if (!canLogToDept(u, department)) {
                         UtilityController.addErrorMessage("No privilage to Login This Department");

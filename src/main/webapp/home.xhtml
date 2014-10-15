@@ -1,14 +1,20 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="./resources/template/template.xhtml">
+                template="./resources/template/template.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 <!--Author : Dr. M H B Ariyaratne, MO(Health Information), buddhika.ari@gmail.com-->
-    <ui:define name="login">
-        About us
-    </ui:define>
+   
     
     <ui:define name="content">
-        
+        <p:panel header="Staff Login" >
+            <p:outputLabel rendered="#{sessionController.logged}" >
+                <h1>Staff Login</h1>
+                <h2>Department - #{sessionController.department.name}</h2>
+                <h2>Institution - #{sessionController.institution.name}</h2>
+                <h2>User - #{sessionController.loggedUserName}</h2>
+            </p:outputLabel>
+        </p:panel>
     </ui:define>
 
 
