@@ -536,7 +536,7 @@
                                             <p:inputText autocomplete="off"   value="#{sessionController.userName}"  style="text-align: left; margin: 5px; padding: 5px;" ></p:inputText>
                                             <h:outputLabel value="Password"  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
                                             <p:password value="#{sessionController.passord }"  style="text-align: left; margin: 5px; padding: 5px;" ></p:password>
-                                            <h:outputLabel value=""  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
+                                            <p:commandButton value="Public" action="index" ajax="false" ></p:commandButton>
                                             <p:commandButton value="Login" action="#{sessionController.loginAction()}" ajax="false" ></p:commandButton>
                                         </h:panelGrid>
                                     </h:form>

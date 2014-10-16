@@ -55,7 +55,7 @@
                                             <p> Bill No</p>
                                         </td>
                                         <td>
-                                            <p> <h:inputText value="#{sessionController.billNo}" ></h:inputText> </p>
+                                            <p> <p:inputText value="#{sessionController.billNo}" style="width: 150px; margin-left: 20px;"  ></p:inputText> </p>
                                         </td>
                                     </tr>
                                     <tr style="vertical-align: middle; text-align: left;">
@@ -63,13 +63,19 @@
                                             <p> Phone No </p>
                                         </td>
                                         <td>
-                                            <p>     <h:inputText value="#{sessionController.phoneNo}" ></h:inputText> </p>
+                                            <p> 
+                                                <p:inputMask mask="999-9999999" id="txtNewPtPhone" 
+                                                             autocomplete="off" maxlength="11" 
+                                                             value="#{sessionController.phoneNo}"
+                                                             style="width: 150px;  margin-left: 20px;">
+                                                </p:inputMask>
+                                            </p>
                                         </td>
                                     </tr>
 
                                     <tr>
-                                        <td colspan="2"  style="vertical-align: middle; text-align: center;">
-                                            <h:commandButton class ="default-button" value= "View My Reports" action="#{patientReportController.fillPatientReports}" ></h:commandButton>
+                                        <td colspan="2"  style="vertical-align: middle; text-align: center!important;">
+                                            <h:commandLink class ="button" value= "View Reports" action="#{patientReportController.fillPatientReports}" ></h:commandLink>
                                         </td>
                                     </tr>
 
@@ -81,12 +87,10 @@
                         </div>
                     </div>
                     <!-- /#contents -->
-                    <div id="footer">
+                   <div id="footer">
                         <div id="description">
                             <div> 
-                                <a href="http://www.lakmedi.com" class="logo"></a> 
-                                <span>Copyright &copy; 2012 <a href="http://www.lakmedi.com">Lakmedipro Pvt Ltd</a> 
-                                    All rights reserved
+                                <span><a href="http://www.lakmedi.com">Copyright &copy; 2012 Lakmedipro Pvt Ltd. All rights reserved</a> 
                                 </span></div>
                         </div>
                     </div>

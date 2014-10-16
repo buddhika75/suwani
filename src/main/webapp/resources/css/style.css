@@ -200,6 +200,24 @@ img {
     bottom: -20px;
     left: 403px;
 }
+
+ a.button {
+    background: url("#{resource['images/bg-button.jpg']}")  no-repeat;
+    color: #8e7217;
+    display: block;
+    font-family: 'CorbenBold';
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    width: 144px;
+    padding: 4px 0 6px;
+    text-align: center;
+    text-decoration: none;
+    /*position: absolute;*/
+    /*bottom: -20px;*/
+    /*left: 403px;*/
+}
+
 /*------------------------------ Blog Page ------------------------------*/
 #blogs {
     background: url("#{resource['images/border-dashed.jpg']}") repeat-x left bottom;
