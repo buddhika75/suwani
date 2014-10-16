@@ -61,6 +61,9 @@
 
                                         <ui:repeat value="#{commonReportItemController.items}" var="myCli" >
                                             <div style="#{myCli.cssStyle}; position:absolute;">
+                                                
+                                               <!--#{myCli.cssFontSize}-->
+                                                
                                                 <h:outputText rendered="#{myCli.ixItemType eq 'Label' and myCli.retired ne true }"  value="#{myCli.name}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>
                                                 <h:outputText rendered="#{myCli.ixItemType ne 'Label' and myCli.reportItemType eq 'PatientName' and myCli.retired eq false }"  value="#{patientReportController.currentPatientReport.patientInvestigation.patient.person.nameWithTitle}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>
                                                 <h:outputText rendered="#{myCli.ixItemType ne 'Label' and myCli.reportItemType eq 'PatientAge' and myCli.retired eq false }"  value="#{patientReportController.currentPatientReport.patientInvestigation.patient.age}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>

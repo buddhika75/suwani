@@ -502,7 +502,7 @@ public class ReportItem implements Serializable {
                 + "%; width:" + cssWidth + "; height:"
                 + cssHeight + "; background-color:" + cssColor + ";"
                 + "font-style:" + cssFontStyle + ";font-size:"
-                + cssFontSize + "%;line-height:" + cssLineHeight
+                + cssFontSize + ";line-height:" + cssLineHeight
                 + "%;margin:" + cssMargin + "%;padding:" + cssPadding + "%;"
                 + "border:" + cssBorder + "%;background-color:" + cssBackColor + ";"
                 + "position:" + cssPosition + "; vertical-align: " + cssVerticalAlign + ";"
