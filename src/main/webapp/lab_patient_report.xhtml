@@ -299,6 +299,7 @@
                                 <ui:repeat  value="#{patientReportController.currentPatientReport.patientReportItemValues}" var="prv" >
 
                                     <div style="#{prv.investigationItem.cssStyle}; position:absolute;">
+
                                         <h:outputLabel value="#{prv.lobValue}" rendered="#{prv.investigationItem.ixItemType eq 'Value' and prv.investigationItem.ixItemValueType eq 'Memo' and prv.investigationItem.retired eq false}"  escape="false" />
                                     </div>
                                 </ui:repeat>
