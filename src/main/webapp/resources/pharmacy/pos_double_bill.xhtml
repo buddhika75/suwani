@@ -45,23 +45,18 @@
             </div>
 
             <div class="billline">
-                <h:outputLabel value="-----------------------------------------------"   />                           
-            </div>
-
-            <div class="billline">
-                <h:outputLabel value="-----------------------------------------------"   />                           
+                <h:outputLabel value="---------------------------------------------------------------------------------------------------"   />                           
             </div>
 
             <div class="billDetails" style="width: 100%;" >
-                <table  >
+                <table class="printTable" >
                     <tr>
                         <td style="width: 15%; text-align: left;" >
                             <h:outputLabel value="Date" class="billDetails" ></h:outputLabel>
                         </td>
                         <td>:</td>
 
-                        <td style="width: 30%" >
-                            <!--<h:outputLabel value=": &npsp;" ></h:outputLabel>-->
+                        <td style="width: 40%;text-align: left;" >
                             <h:outputLabel value="#{cc.attrs.bill.createdAt}" class="billDetails" >
                                 <f:convertDateTime pattern="dd/MM/yy" ></f:convertDateTime>
                             </h:outputLabel>
@@ -69,12 +64,14 @@
                         <td style="width: 10%" >
 
                         </td>
-                        <td style="width: 15%" >
-                            <!--<h:outputLabel value="Time" ></h:outputLabel>-->
+                        <td style="width: 15%;text-align: left;" >
+                            <h:outputLabel value="Time" ></h:outputLabel>
+                        </td>
+                        <td  >
+                            <h:outputLabel value=":" ></h:outputLabel>
                         </td>
 
-                        <td style="width: 30%" >
-                            <!--<h:outputLabel value=": &npsp;" ></h:outputLabel>-->
+                        <td style="width: 30%;text-align: left;" >
                             <h:outputLabel value="#{cc.attrs.bill.createdAt}" class="billDetails">
                                 <f:convertDateTime pattern="hh:mm a" ></f:convertDateTime>
                             </h:outputLabel>
@@ -88,46 +85,48 @@
                             <h:outputLabel value="Inv.No" ></h:outputLabel>
                         </td>
                         <td>:</td>
-                        <td style="width: 30%;" >
-                            <!--<h:outputLabel value=": &npsp;" ></h:outputLabel>-->
+                        <td style="width: 40%;text-align: left;" >
                             <h:outputLabel value="#{cc.attrs.bill.deptId}"  >
                             </h:outputLabel>
                         </td>
                         <td style="width: 10%" >
 
                         </td>
-                        <td style="width: 15%" >
+
+                        <td style="width: 15%;text-align: left;" >
                             <h:outputLabel value="Age" ></h:outputLabel>
                         </td>
-
-                        <td style="width: 30%" >
-                            <h:outputLabel value=": &npsp;" ></h:outputLabel>
+                        <td>:</td>
+                        <td style="width: 30%;text-align: left;" >
                             <h:outputLabel value="#{cc.attrs.bill.patient.age}" >
-                                <!--cc.attrs.bill.creater.staff.code-->
                             </h:outputLabel>
                         </td>
 
                     </tr>
 
 
-                    <h:panelGroup rendered="#{cc.attrs.bill.patient ne null}" >
-                        <tr>
-                            <td style="width: 15% ;text-align: left;" >
-                                <h:outputLabel value="Name" ></h:outputLabel>
-                            </td>
-                            <td>:</td>
-                            <td style="width: 30%;" >
-                                <h:outputLabel value="#{cc.attrs.bill.patient.person.nameWithTitle}"  >
-                                </h:outputLabel>
-                            </td>
-                            <td style="width: 10%" >
-                            </td>
-                            <td style="width: 15%" >
-                            </td>
-                            <td style="width: 30%" >
-                            </td>
-                        </tr>
-                    </h:panelGroup>
+
+                    <tr>
+                        <td style="width: 15% ;text-align: left;" >
+                            <h:outputLabel value="Name" ></h:outputLabel>
+                        </td>
+                        <td>:</td>
+                        <td style="width: 30%;text-align: left;" >
+                            <h:outputLabel value="#{cc.attrs.bill.patient.person.nameWithTitle}"  >
+                            </h:outputLabel>
+                        </td>
+                        <td style="width: 10%" >
+                        </td>
+                        <td style="width: 15%;text-align: left;" >
+                            Phone
+                        </td>
+                        <td>:</td>
+                        <td style="width: 30%;text-align: left;" >
+                            <h:outputLabel value="#{cc.attrs.bill.patient.person.phone}"  >
+                            </h:outputLabel>
+                        </td>
+                    </tr>
+
 
 
                 </table>
@@ -135,41 +134,33 @@
 
             </div>
 
-
             <div class="billline">
-                <h:outputLabel value="-----------------------------------------------"   />                           
+                <h:outputLabel value="---------------------------------------------------------------------------------------------------"   />                           
             </div>
 
 
             <div >
 
-                <table width="100%" style="width: 100%;" >
-                    <tr>
-                        <td style="min-width: 15%; ">
-                        </td>
-                        <td style="width: 55%; ">
+                <table width="100%" style="width: 98%; padding-left: 10px; margin: 10px;" >
+                    <tr style="border: 1px solid;">
+
+                        <td style="width: 55%; padding-left: 20px; ">
                             <h:outputLabel value="ITEM" styleClass="itemHeadings" ></h:outputLabel>
                         </td>
-                        <td  style="width:30%;text-align: right; padding-right: 30px;">
+                        <td  style="width:30%;text-align: right; padding-right: 20px;">
                             <h:outputLabel value="VALUE"  styleClass="itemHeadings" ></h:outputLabel>
                         </td>
-                        <td style="min-width: 15%; ">
-                        </td>
+
                     </tr>
 
-                    <tr>
-                        <td colspan="4" >
-                            <h:outputLabel value="-----------------------------------------------"  style="text-align:center; " />                           
-                        </td>
-                    </tr>
+
 
 
                     <ui:repeat value="#{cc.attrs.bill.billItems}" var="bip"   >
 
-                        <tr>
-                            <td style="min-width: 15%; ">
-                            </td>
-                            <td style="overflow: visible;">
+                        <tr  style="border: 1px solid;">
+
+                            <td style="overflow: visible; padding-left: 20px;">
 
                                 <h:outputLabel value="#{bip.item.name}"  styleClass="itemsBlock" style="text-transform: capitalize!important;"  >
                                 </h:outputLabel>
@@ -181,8 +172,7 @@
                                     <f:convertNumber pattern="#,##0.00" />
                                 </h:outputLabel>
                             </td>
-                            <td style="min-width: 15%; ">
-                            </td>
+
 
                         </tr>
 
@@ -201,7 +191,7 @@
 
 
             <div class="billline">
-                <h:outputLabel value="-----------------------------------------------"   />                           
+                <h:outputLabel value="---------------------------------------------------------------------------------------------------"   />                           
             </div>
 
 
@@ -243,29 +233,22 @@
 
                 </table>
 
-                <table><tr><td>
-                            <div class="cashier" style="text-decoration: overline;font-size: 12px;">
-                                <h:outputLabel  value="Cashier : #{cc.attrs.bill.creater.code}"   />
-                            </div>
 
-                        </td>
-
-                    </tr></table>
 
             </div>
 
 
 
 
-            <div class="footer">
-                <div style="border: 1px solid black; width: 90%; font-size: 150%;" >
+            <div class="footer" style="text-align: center;">
+                <div style="border: 1px solid black; width: 99%; font-size: 130%;" >
                     <b>To View Reports On Internet</b><br/>
                     <p>Firefox/Chrome -> www.weblk.info/suwani -> reports -> phone No. + bill No. -> View Reports </p>
                 </div>
 
                 <br/>
                 THANK YOU.<br/>
-                Software by www.lakmedi.com - 0776285007<br/>
+                Software by www.lakmedi.com - 0715812399<br/>
             </div>
 
 
