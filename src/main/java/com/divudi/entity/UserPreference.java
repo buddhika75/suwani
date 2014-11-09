@@ -34,6 +34,37 @@ public class UserPreference implements Serializable {
     Department department;
     @ManyToOne
     Institution institution;
+    String gmailUserName;
+    String gmailPassword;
+    String contactEmail;
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+    
+    
+
+    public String getGmailUserName() {
+        return gmailUserName;
+    }
+
+    public void setGmailUserName(String gmailUserName) {
+        this.gmailUserName = gmailUserName;
+    }
+
+    public String getGmailPassword() {
+        return gmailPassword;
+    }
+
+    public void setGmailPassword(String gmailPassword) {
+        this.gmailPassword = gmailPassword;
+    }
+    
+    
     
     
 

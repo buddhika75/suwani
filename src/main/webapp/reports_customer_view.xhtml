@@ -11,6 +11,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>#{labels.topic}</title>
         <h:outputStylesheet library="css" name="style.css" />
+        <h:outputStylesheet library="css" name="maincss.css" />
     </h:head>
     <h:body  >
 
@@ -19,7 +20,7 @@
 
             <div id="background">
                 <div id="page">
-                    <div id="header">
+                    <div id="header" class="nonPrintBlock">
                         <span id="connect">
                             <a href="https://www.facebook.com/suwanihealth" class="facebook"></a>
                             <a href="#" class="twitter"></a>
@@ -46,24 +47,23 @@
                     </div>
                     <!-- /#header -->
                     <div id="contents">
-                        <div id="main">
+                        <div id="main" >
 
+                            <p:commandButton styleClass="nonPrintBlock"  ajax="false" value="Print" onclick="window.print();" actionListener="#{patientReportController.printPatientReport()}" />
 
-
-                            <p:panel styleClass="myDivToPrint" id="divPrint" style="border: 0px; margin: 0px; padding: 0px; background-color: white!important;" >
+                            <div>
 
 
 
                                 <h:panelGroup rendered="#{patientReportController.currentPatientReport.item.reportType ne 'Microbiology'}"  >
-                                    <div id="divReport"  style="min-width:800px;min-height: 1100px; position: relative; font-size: 150%;">
+
+                                    <div id="divReport"  style="min-width:21cm;min-height: 48cm!important; position: relative; font-size: 150%; background: url('/suwani/faces/javax.faces.resource/images/suwanireport.png') no-repeat ; background-size: 100%; ">
 
 
 
                                         <ui:repeat value="#{commonReportItemController.items}" var="myCli" >
                                             <div style="#{myCli.cssStyle}; position:absolute;">
-                                                
-                                               <!--#{myCli.cssFontSize}-->
-                                                
+
                                                 <h:outputText rendered="#{myCli.ixItemType eq 'Label' and myCli.retired ne true }"  value="#{myCli.name}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>
                                                 <h:outputText rendered="#{myCli.ixItemType ne 'Label' and myCli.reportItemType eq 'PatientName' and myCli.retired eq false }"  value="#{patientReportController.currentPatientReport.patientInvestigation.patient.person.nameWithTitle}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>
                                                 <h:outputText rendered="#{myCli.ixItemType ne 'Label' and myCli.reportItemType eq 'PatientAge' and myCli.retired eq false }"  value="#{patientReportController.currentPatientReport.patientInvestigation.patient.age}" style="color: #{myCli.cssColor}" escape="false" ></h:outputText>
@@ -320,15 +320,13 @@
 
 
 
-
-                            </p:panel>
-
+                            </div>
 
 
                         </div>
                     </div>
                     <!-- /#contents -->
-                    <div id="footer">
+                    <div id="footer" class="nonPrintBlock">
                         <div id="description">
                             <div> 
                                 <span><a href="http://www.lakmedi.com">Copyright &copy; 2012 Lakmedipro Pvt Ltd. All rights reserved</a> 

@@ -146,6 +146,24 @@ img {
     margin: 20px 0;
     width: 350px;
 }
+
+#main contact {
+    color: #ffffff;
+    font-style: normal;
+    width: 350px;
+    margin: 0 auto;
+    text-align: center;
+}
+#main contact span {
+    color: #9d7912;
+    display: block;
+    font-family: 'CorbenBold';
+    font-size: 15px;
+    line-height: 10px;
+    margin: 20px 0;
+    width: 350px;
+}
+
 #adbox {
     background: #ffffff url("#{resource['images/bottom-shadow-headliner.jpg']}") no-repeat center bottom;
     height: 371px;

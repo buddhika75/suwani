@@ -26,6 +26,7 @@ import com.divudi.facade.WebUserDepartmentFacade;
 import com.divudi.facade.WebUserFacade;
 import com.divudi.facade.WebUserPrivilegeFacade;
 import com.divudi.facade.WebUserRoleFacade;
+import com.divudi.facade.util.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +60,7 @@ public class SessionController implements Serializable, HttpSessionListener {
     private static final long serialVersionUID = 1L;
     WebUser loggedUser = null;
     UserPreference userPreference;
+    UserPreference applicationPreference;
     boolean logged = false;
     boolean activated = false;
     String primeTheme;
@@ -392,6 +394,7 @@ public class SessionController implements Serializable, HttpSessionListener {
                     setRole(u.getRole());
                     UserPreference uf;
                     String sql;
+                    
                     sql="select p from UserPreference p where p.webUser=:u";
                     Map m = new HashMap();
                     m.put("u", u);
@@ -403,6 +406,17 @@ public class SessionController implements Serializable, HttpSessionListener {
                     }
                     setUserPreference(uf);
                     
+                    sql="select p from UserPreference p where p.webUser is null";
+                    uf=getUserPreferenceFacade().findFirstBySQL(sql, m);
+                    if(uf==null){
+                        uf=new UserPreference();
+                        uf.setWebUser(null);
+                        getUserPreferenceFacade().create(uf);
+                    }
+                    setApplicationPreference(applicationPreference);
+                    
+                    
+                    
                     recordLogin();
 
                     UtilityController.addSuccessMessage("Logged successfully");
@@ -411,6 +425,11 @@ public class SessionController implements Serializable, HttpSessionListener {
             }
         }
         return false;
+    }
+    
+    public void updateApplicationPreference(){
+        getUserPreferenceFacade().edit(applicationPreference);
+        JsfUtil.addSuccessMessage("Updated");
     }
 
     private boolean canLogToDept(WebUser e, Department d) {
@@ -797,6 +816,14 @@ public class SessionController implements Serializable, HttpSessionListener {
 
     public void setUserPreferenceFacade(UserPreferenceFacade userPreferenceFacade) {
         this.userPreferenceFacade = userPreferenceFacade;
+    }
+
+    public UserPreference getApplicationPreference() {
+        return applicationPreference;
+    }
+
+    public void setApplicationPreference(UserPreference applicationPreference) {
+        this.applicationPreference = applicationPreference;
     }
 
 

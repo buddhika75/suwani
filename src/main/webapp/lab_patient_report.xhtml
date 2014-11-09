@@ -64,7 +64,7 @@
                                 </p:commandButton>
                                 <p:commandButton styleClass="nonPrintBlock"  id="btnApprove"  disabled ="#{!(webUserController.hasPrivilege('LabAutherizing') eq true and patientReportController.currentPatientReport.dataEntered eq true )}"   value="Approve" action="#{patientReportController.approvePatientReport()}" ajax="false" >
                                 </p:commandButton>
-                                <p:commandButton styleClass="nonPrintBlock"  ajax="false" value="Print" onclick="window.print();" actionListener="#{patientReportController.printPatientReport()}" />
+                                <p:commandButton styleClass="nonPrintBlock" ajax="false" value="Print" onclick="window.print();" actionListener="#{patientReportController.printPatientReport()}" />
                                 <p:spacer width="30" ></p:spacer>
                                 <p:commandButton  styleClass="nonPrintBlock"  value="Patient Report Search" action="#{patientReportController.patientReportSearch}" ajax="false" >
                                 </p:commandButton>

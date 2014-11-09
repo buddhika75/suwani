@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
         <ui:composition template="./resources/template/template.xhtml">
@@ -11,12 +12,38 @@
                 <h:form>
                     <p:panel header="Manage Institution" >
 
+                        <p:panel >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Contact us messages" ></p:outputLabel>
+                                <p:commandButton value="Update" action="#{sessionController.updateApplicationPreference()}" ajax="false" ></p:commandButton>
+                            </f:facet>
+                            <h1>Gmail account to send contact us forms</h1>
+                            <p>Please note that these details are visible to all administrators and developers. Please do not use you personal email details here. Create a new gmail account to send contact us requests.</p>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Gmail User Name:" for="gmailUserName" />
+                                <p:inputText id="gmailUserName" value="#{sessionController.userPreference.gmailUserName}" title="GmailUserName" />
+                                <p:outputLabel value="Gmail Password:" for="gmailPassword" />
+                                <p:inputText id="gmailPassword" value="#{sessionController.userPreference.gmailPassword}" title="GmailPassword" />
+                            </p:panelGrid>
+                        
+                            
+                            <h1>"Gmail account to receive contact us messages." </h1>
+                            <p>Please use your mail so that you will receive contact us messages.</p>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Email:" for="gmailUserName" />
+                                <p:inputText id="gmailUserName" value="#{sessionController.userPreference.contactEmail}" title="GmailUserName" />
+                            </p:panelGrid>
+
+                        </p:panel>
+
+                        
+
                         <h:panelGrid columns="1" >
                             <p:commandButton styleClass="linkButton" ajax="false" value="Institution" action="lab_institution"/>
                             <p:commandButton  styleClass="linkButton" ajax="false" value="Institution Branch" action="lab_institution_branch"/>
                             <p:commandButton  styleClass="linkButton" ajax="false" value="Departments" action="lab_department"/>
-                            
-                            
+
+
                             <p:commandButton  styleClass="linkButton" ajax="false" value="Collecting Centres" action="lab_collecting_centre"/>
                             <p:commandButton  styleClass="linkButton" ajax="false" value="Credit Companies" action="lab_credit_company"/>
                             <p:commandButton  styleClass="linkButton" ajax="false" value="Area" action="area"/>
