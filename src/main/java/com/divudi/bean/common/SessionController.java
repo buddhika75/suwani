@@ -407,7 +407,7 @@ public class SessionController implements Serializable, HttpSessionListener {
                     setUserPreference(uf);
                     
                     sql="select p from UserPreference p where p.webUser is null";
-                    uf=getUserPreferenceFacade().findFirstBySQL(sql, m);
+                    uf=getUserPreferenceFacade().findFirstBySQL(sql);
                     if(uf==null){
                         uf=new UserPreference();
                         uf.setWebUser(null);
