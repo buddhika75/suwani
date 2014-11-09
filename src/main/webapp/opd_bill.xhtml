@@ -469,17 +469,12 @@
                             <div>
 
                                 <ui:repeat value="#{billController.bills}" var="bill" >
-
-                                    <div class="fiveinchbillBreak" >
-                                        <div>
-                                            <phi:pos_double_bill bill="#{bill}"></phi:pos_double_bill>
-                                        </div>
-                                        <hr/>
-                                        <div>
-                                            <phi:pos_double_bill bill="#{bill}"></phi:pos_double_bill>
-                                        </div>
+                                    <div  class="fiveinchbillBreak">
+                                        <phi:pos_double_bill bill="#{bill}"></phi:pos_double_bill>
                                     </div>
-
+                                    <div  class="fiveinchbillBreak">
+                                        <phi:pos_double_bill bill="#{bill}"></phi:pos_double_bill>
+                                    </div>
                                 </ui:repeat>
 
                             </div>
