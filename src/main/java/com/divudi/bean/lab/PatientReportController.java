@@ -17,6 +17,7 @@ import com.divudi.data.CalculationType;
 import com.divudi.data.InvestigationItemType;
 import com.divudi.data.InvestigationReportType;
 import com.divudi.ejb.PatientReportBean;
+import com.divudi.entity.Sms;
 import com.divudi.entity.lab.Investigation;
 import com.divudi.entity.lab.InvestigationItem;
 import com.divudi.entity.lab.IxCal;
@@ -30,14 +31,20 @@ import com.divudi.facade.PatientInvestigationItemValueFacade;
 import com.divudi.facade.PatientReportFacade;
 import com.divudi.facade.PatientReportItemValueFacade;
 import com.divudi.facade.TestFlagFacade;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -104,8 +111,7 @@ public class PatientReportController implements Serializable {
     public void setCustomerReports(List<PatientReport> customerReports) {
         this.customerReports = customerReports;
     }
-    
-    
+
     List<PatientInvestigation> customerPis;
 
     public List<PatientInvestigation> getCustomerPis() {
@@ -115,10 +121,8 @@ public class PatientReportController implements Serializable {
     public void setCustomerPis(List<PatientInvestigation> customerPis) {
         this.customerPis = customerPis;
     }
-    
-    
-    
-    public String fillPatientReports(){
+
+    public String fillPatientReports() {
         String sql;
         Map m = new HashMap();
         m.put("phone", getSessionController().getPhoneNo());
@@ -129,11 +133,10 @@ public class PatientReportController implements Serializable {
                 + "order by pr.id desc ";
         System.out.println("m = " + m);
         System.out.println("sql = " + sql);
-        customerPis = getPiFacade().findBySQL(sql, m,50);
+        customerPis = getPiFacade().findBySQL(sql, m, 50);
         return "/reports_list";
     }
-    
-    
+
     public String patientReportSearch() {
         if (currentPatientReport == null || currentPatientReport.getPatientInvestigation() == null || currentPatientReport.getPatientInvestigation().getPatient() == null) {
             return "";
@@ -488,7 +491,7 @@ public class PatientReportController implements Serializable {
     public void savePatientReportItemValues() {
         if (currentPatientReport != null) {
             for (PatientReportItemValue v : getCurrentPatientReport().getPatientReportItemValues()) {
-            //System.out.println("saving ptrtiv + " + v);
+                //System.out.println("saving ptrtiv + " + v);
                 //System.out.println("saving ptrtiv Stre " + v.getStrValue());
                 //System.out.println("saving ptrtiv Double " + v.getDoubleValue());
                 //System.out.println("saving ptrtiv Lob " + v.getLobValue());
@@ -524,7 +527,69 @@ public class PatientReportController implements Serializable {
         getFacade().edit(currentPatientReport);
         getPiFacade().edit(currentPtIx);
 
+        SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(currentPatientReport);
+        sendSms.start();
+        
         UtilityController.addSuccessMessage("Saved");
+    }
+
+   
+
+    class SendSmsOnSavingPatientReport implements Runnable {
+        private Thread t;
+        PatientReport pr;
+        
+        SendSmsOnSavingPatientReport(PatientReport pr) {
+            this.pr = pr;
+        }
+
+        public void run() {
+            String url = "http://www.textit.biz/sendmsg";
+            HttpResponse<String> stringResponse;
+            String messageBody;
+            String id = "94715812399";
+            String pw = "5672";
+            Sms sms = new Sms();
+            messageBody = "Your " + pr.getPatientInvestigation().getInvestigation().getName() + " is ready for collectopn at " ;
+            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getName() ;
+            messageBody = messageBody + " at " + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getAddress() + " or ";
+            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getWeb() ;
+            
+            try {
+                stringResponse = Unirest.post(url)
+                        .field("id", id)
+                        .field("pw", pw)
+                        .field("text", messageBody)
+                        .asString();
+                sms.setUserId(id);
+                sms.setPassword(pw);
+                sms.setCreatedAt(new Date());
+                sms.setCreater(getSessionController().getLoggedUser());
+                sms.setPatientReport(pr);
+                sms.setSendingUrl(url);
+                sms.setSendingMessage(messageBody);
+                sms.setReceivedMessage(stringResponse.getBody());
+                
+                
+            } catch (UnirestException ex) {
+                Logger.getLogger(PatientReportController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            saveResponseFromExternalSite(stringResponse.getBody());
+        }
+
+        public void start() {
+            System.out.println("Starting sending sms.");
+            if (t == null) {
+                t = new Thread(this);
+                t.start();
+            }
+        }
+
+    }
+
+    public void main(String args[]) {
+        SendSmsOnSavingPatientReport R1 = new SendSmsOnSavingPatientReport("Thread-1");
+        R1.start();
     }
 
     public void approvePatientReport() {
