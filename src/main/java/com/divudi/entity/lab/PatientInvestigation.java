@@ -11,8 +11,10 @@ import com.divudi.entity.Institution;
 import com.divudi.entity.Packege;
 import com.divudi.entity.Patient;
 import com.divudi.entity.PatientEncounter;
+import com.divudi.entity.Sms;
 import com.divudi.entity.WebUser;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
@@ -161,8 +163,52 @@ public class PatientInvestigation implements Serializable {
     private Department outsourcedDepartment;
     @ManyToOne
     private Institution outsourcedInstitution;
-    @OneToMany(mappedBy="patientInvestigation")
+    @OneToMany(mappedBy = "patientInvestigation")
     List<PatientReport> patientReports;
+
+    //Sms Info
+    private Boolean smsed = false;
+    @ManyToOne
+    private WebUser smsedUser;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date smsedAt;
+    @OneToMany(mappedBy = "patientInvestigation")
+    List<Sms> sentSmses;
+
+    public Boolean getSmsed() {
+        return smsed;
+    }
+
+    public void setSmsed(Boolean smsed) {
+        this.smsed = smsed;
+    }
+
+    public WebUser getSmsedUser() {
+        return smsedUser;
+    }
+
+    public void setSmsedUser(WebUser smsedUser) {
+        this.smsedUser = smsedUser;
+    }
+
+    public Date getSmsedAt() {
+        return smsedAt;
+    }
+
+    public void setSmsedAt(Date smsedAt) {
+        this.smsedAt = smsedAt;
+    }
+
+    public List<Sms> getSentSmses() {
+        if (sentSmses == null) {
+            sentSmses = new ArrayList<>();
+        }
+        return sentSmses;
+    }
+
+    public void setSentSmses(List<Sms> sentSmses) {
+        this.sentSmses = sentSmses;
+    }
 
     public List<PatientReport> getPatientReports() {
         return patientReports;
@@ -171,9 +217,7 @@ public class PatientInvestigation implements Serializable {
     public void setPatientReports(List<PatientReport> patientReports) {
         this.patientReports = patientReports;
     }
-    
-    
-    
+
     public BillComponent getBillComponent() {
         return billComponent;
     }
@@ -191,7 +235,7 @@ public class PatientInvestigation implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        
+
         if (!(object instanceof PatientInvestigation)) {
             return false;
         }
@@ -249,7 +293,7 @@ public class PatientInvestigation implements Serializable {
 
     public Boolean getSampleOutside() {
         //System.out.println("Getting "+sampleOutside);
-        
+
         return sampleOutside;
     }
 
@@ -395,7 +439,7 @@ public class PatientInvestigation implements Serializable {
     }
 
     public Boolean getCancelled() {
-        
+
         return cancelled;
     }
 

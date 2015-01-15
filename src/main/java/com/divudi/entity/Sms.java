@@ -5,6 +5,7 @@
  */
 package com.divudi.entity;
 
+import com.divudi.entity.lab.PatientInvestigation;
 import com.divudi.entity.lab.PatientReport;
 import java.io.Serializable;
 import java.util.Date;
@@ -22,6 +23,8 @@ import javax.persistence.Temporal;
  */
 @Entity
 public class Sms implements Serializable {
+    @ManyToOne
+    private PatientInvestigation patientInvestigation;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,6 +55,16 @@ public class Sms implements Serializable {
     private String retireComments;
     //DataEntry
 
+    public PatientInvestigation getPatientInvestigation() {
+        return patientInvestigation;
+    }
+
+    public void setPatientInvestigation(PatientInvestigation patientInvestigation) {
+        this.patientInvestigation = patientInvestigation;
+    }
+
+    
+    
     public PatientReport getPatientReport() {
         return patientReport;
     }

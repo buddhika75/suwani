@@ -13,6 +13,7 @@ import com.divudi.bean.common.UtilityController;
 import com.divudi.bean.report.LabReportSearchByInstitutionController;
 import com.divudi.ejb.CommonFunctions;
 import com.divudi.entity.Department;
+import com.divudi.entity.Sms;
 import com.divudi.entity.lab.Investigation;
 import com.divudi.entity.lab.InvestigationItem;
 import com.divudi.entity.lab.PatientInvestigation;
@@ -23,6 +24,10 @@ import com.divudi.facade.InvestigationItemFacade;
 import com.divudi.facade.PatientInvestigationFacade;
 import com.divudi.facade.PatientReportFacade;
 import com.divudi.facade.ReportItemFacade;
+import com.divudi.facade.SmsFacade;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -382,6 +389,102 @@ public class PatientInvestigationController implements Serializable {
     @Inject
     private LabReportSearchByInstitutionController labReportSearchByInstitutionController;
 
+    public void sendSms() {
+        if (current == null) {
+            UtilityController.addErrorMessage("Nothing to send sms");
+            return;
+        }
+        try {
+            System.out.println("trying to send the sms thread ");
+            SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(current);
+            System.out.println("trying to start");
+            sendSms.start();
+            getCurrent().getSentSmses().add(sendSms.sms);
+            System.out.println("Sending Sms Completed. ");
+            getCurrent().setSmsed(true);
+            getCurrent().setSmsedAt(new Date());
+            getCurrent().setSmsedUser(getSessionController().getLoggedUser());
+            getFacade().edit(current);
+                        UtilityController.addSuccessMessage("Sms send");
+        } catch (Exception e) {
+            System.out.println("e = " + e);
+            UtilityController.addErrorMessage("Error sending sms. " + e.getMessage());
+        }
+
+        getLabReportSearchByInstitutionController().createPatientInvestigaationList();
+    }
+
+    class SendSmsOnSavingPatientReport implements Runnable {
+
+        Sms sms;
+        private Thread t;
+        PatientInvestigation pi;
+
+        SendSmsOnSavingPatientReport(PatientInvestigation pi) {
+            this.pi = pi;
+            System.out.println("pi = " + pi);
+        }
+
+        public void run() {
+            System.out.println("running the sending sms thread.");
+            if (pi == null) {
+                System.out.println("pr is null ");
+            }
+            String url = "http://www.textit.biz/sendmsg/index.php";
+            HttpResponse<String> stringResponse;
+            String messageBody;
+            String id = "94715812399";
+            String pw = "5672";
+
+            String sendingNo = pi.getBillItem().getBill().getPatient().getPerson().getPhone();
+            StringBuilder sb = new StringBuilder(sendingNo);
+            sb.deleteCharAt(3);
+            sendingNo = sb.toString();
+
+            sms = new Sms();
+            messageBody = "Your reports are ready. ";
+            messageBody = messageBody + pi.getBillItem().getBill().getDepartment().getAddress() + ". ";
+            messageBody = messageBody + pi.getBillItem().getBill().getInstitution().getWeb();
+
+            try {
+                System.out.println("id = " + id);
+                System.out.println("pw = " + pw);
+                System.out.println("sendingNo = " + sendingNo);
+                System.out.println("text = " + messageBody);
+
+                stringResponse = Unirest.post(url)
+                        .field("id", id)
+                        .field("pw", pw)
+                        .field("to", sendingNo)
+                        .field("text", messageBody)
+                        .asString();
+                System.out.println("stringResponse = " + stringResponse);
+                sms.setUserId(id);
+                sms.setPassword(pw);
+                sms.setCreatedAt(new Date());
+                sms.setPatientInvestigation(pi);
+                sms.setSendingUrl(url);
+                sms.setSendingMessage(messageBody);
+                sms.setReceivedMessage(stringResponse.getBody());
+            } catch (Exception ex) {
+                System.out.println("ex = " + ex);
+            }
+
+        }
+
+        @EJB
+        SmsFacade smsFacade;
+
+        public void start() {
+            System.out.println("Starting sending sms. this in in start");
+            if (t == null) {
+                t = new Thread(this);
+                t.start();
+            }
+        }
+
+    }
+
     public void markAsSampled() {
         if (current == null) {
             UtilityController.addErrorMessage("Nothing to sample");
@@ -466,7 +569,7 @@ public class PatientInvestigationController implements Serializable {
 
     public void toCollectSample() {
         prepareToSample();
-        
+
     }
 
     public void prepareToSample() {
@@ -498,7 +601,7 @@ public class PatientInvestigationController implements Serializable {
         temMap.put("d", getSessionController().getDepartment());
 //        //System.out.println("Sql is " + temSql);
         toReceive = getFacade().findBySQL(temSql, temMap, TemporalType.TIMESTAMP);
-      
+
     }
 
     public void markYetToReceiveOnes() {

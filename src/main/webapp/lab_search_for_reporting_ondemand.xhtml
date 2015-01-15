@@ -131,6 +131,20 @@
                                         <f:setPropertyActionListener value="#{pi}" target="#{patientReportController.currentPtIx}"></f:setPropertyActionListener>
                                         <p:graphicImage library="image/icon" styleClass="standedicon" name="data_entry.png" ></p:graphicImage>
                                     </p:commandLink>
+                                    <p:commandLink process="btnSms" update="tblBills"  
+                                                   id="btnSms" 
+                                                   rendered="#{!pi.smsed}"
+                                                   action="#{patientInvestigationController.sendSms()}" >
+                                        <f:setPropertyActionListener value="#{pi}" target="#{patientInvestigationController.current}"></f:setPropertyActionListener>
+                                        <p:graphicImage library="image/icon" styleClass="standedicon" name="sms.jpg" ></p:graphicImage>
+                                    </p:commandLink>
+                                     <p:commandLink process="btnSmsSent" update="tblBills"  
+                                                   id="btnSmsSent"
+                                                   rendered="#{pi.smsed}"
+                                                   action="#{patientInvestigationController.sendSms()}" >
+                                        <f:setPropertyActionListener value="#{pi}" target="#{patientInvestigationController.current}"></f:setPropertyActionListener>
+                                        <p:graphicImage library="image/icon" styleClass="standedicon" name="smssent.png" ></p:graphicImage>
+                                    </p:commandLink>
                                 </h:panelGrid>
 
                                 <p:tooltip for="btnReceive"  >
