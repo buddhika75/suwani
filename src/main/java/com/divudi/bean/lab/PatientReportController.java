@@ -30,11 +30,17 @@ import com.divudi.facade.PatientInvestigationFacade;
 import com.divudi.facade.PatientInvestigationItemValueFacade;
 import com.divudi.facade.PatientReportFacade;
 import com.divudi.facade.PatientReportItemValueFacade;
+import com.divudi.facade.SmsFacade;
 import com.divudi.facade.TestFlagFacade;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -504,6 +510,7 @@ public class PatientReportController implements Serializable {
     }
 
     public void savePatientReport() {
+        System.out.println("Save patient report");
         if (currentPatientReport == null || currentPtIx == null) {
             UtilityController.addErrorMessage("Nothing to save");
             return;
@@ -527,58 +534,104 @@ public class PatientReportController implements Serializable {
         getFacade().edit(currentPatientReport);
         getPiFacade().edit(currentPtIx);
 
+        System.out.println("trying to send the sms thread ");
         SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(currentPatientReport);
+        System.out.println("trying to start");
         sendSms.start();
-        
+        System.out.println("Completed. ");
+
         UtilityController.addSuccessMessage("Saved");
     }
 
-   
-
     class SendSmsOnSavingPatientReport implements Runnable {
+
         private Thread t;
         PatientReport pr;
-        
+
         SendSmsOnSavingPatientReport(PatientReport pr) {
             this.pr = pr;
+            System.out.println("pr = " + pr);
         }
 
         public void run() {
-            String url = "http://www.textit.biz/sendmsg";
+            System.out.println("running the sending sms thread.");
+            if (pr == null) {
+
+                System.out.println("pr is null ");
+            }
+            String url = "http://www.textit.biz/sendmsg/index.php";
             HttpResponse<String> stringResponse;
             String messageBody;
             String id = "94715812399";
             String pw = "5672";
-            Sms sms = new Sms();
-            messageBody = "Your " + pr.getPatientInvestigation().getInvestigation().getName() + " is ready for collectopn at " ;
-            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getName() ;
-            messageBody = messageBody + " at " + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getAddress() + " or ";
-            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getWeb() ;
             
+            String sendingNo = pr.getPatientInvestigation().getBillItem().getBill().getPatient().getPerson().getPhone();
+            StringBuilder sb = new StringBuilder(sendingNo);
+            sb.deleteCharAt(3);
+            sendingNo = sb.toString();
+
+            Sms sms = new Sms();
+            messageBody = "Your " + pr.getPatientInvestigation().getInvestigation().getName() + " is ready. ";
+            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getDepartment().getAddress() + ". ";
+            messageBody = messageBody + pr.getPatientInvestigation().getBillItem().getBill().getInstitution().getWeb();
+
             try {
+                System.out.println("id = " + id);
+                System.out.println("pw = " + pw);
+                System.out.println("sendingNo = " + sendingNo);
+                System.out.println("text = " + messageBody);
+
                 stringResponse = Unirest.post(url)
                         .field("id", id)
                         .field("pw", pw)
+                        .field("to", sendingNo)
                         .field("text", messageBody)
                         .asString();
+                
+//                String res = "";
+
+//                URL textit = new URL("http://textit.biz/sendmsg/index.php"
+//                        + "?id="
+//                        + id
+//                        + "&pw="
+//                        + pw
+//                        + "&to="
+//                        + sendingNo
+//                        + "&text=" + messageBody);
+//
+//                try (BufferedReader in = new BufferedReader(
+//                        new InputStreamReader(textit.openStream()))) {
+//                    String inputLine;
+//                    while ((inputLine = in.readLine()) != null) {
+//                        res += inputLine;
+//                    }
+//                }
+
+                System.out.println("stringResponse = " + stringResponse);
+                
+
                 sms.setUserId(id);
                 sms.setPassword(pw);
                 sms.setCreatedAt(new Date());
-                sms.setCreater(getSessionController().getLoggedUser());
+//                sms.setCreater(getSessionController().getLoggedUser());
                 sms.setPatientReport(pr);
                 sms.setSendingUrl(url);
                 sms.setSendingMessage(messageBody);
                 sms.setReceivedMessage(stringResponse.getBody());
-                
-                
+
             } catch (UnirestException ex) {
                 Logger.getLogger(PatientReportController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(PatientReportController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            saveResponseFromExternalSite(stringResponse.getBody());
+
         }
 
+        @EJB
+        SmsFacade smsFacade;
+
         public void start() {
-            System.out.println("Starting sending sms.");
+            System.out.println("Starting sending sms. this in in start");
             if (t == null) {
                 t = new Thread(this);
                 t.start();
@@ -588,8 +641,8 @@ public class PatientReportController implements Serializable {
     }
 
     public void main(String args[]) {
-        SendSmsOnSavingPatientReport R1 = new SendSmsOnSavingPatientReport("Thread-1");
-        R1.start();
+//        SendSmsOnSavingPatientReport R1 = new SendSmsOnSavingPatientReport("Thread-1");
+//        R1.start();
     }
 
     public void approvePatientReport() {
