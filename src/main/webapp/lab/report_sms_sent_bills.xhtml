@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/resources/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="content" >
+        <h:outputStylesheet library="css" name="maincss.css" />
+        <h:outputStylesheet library="css" name="printing.css" />
+        <h:form style="width: 100%;height: 95%;" >
+            <p:growl autoUpdate="true" />
+            <p:panel style="width: 100%;min-height: 600px;" >
+                <p:panel header="List of Bills foe which SMSes were sent" >
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="From Date"/>
+                        <p:calendar   pattern="dd MM yy hh:mm a"  id="fromDate" value="#{patientInvestigationController.fromDate}"  >
+                        </p:calendar>
+
+                        <h:outputLabel value="To Date"/>
+                        <p:calendar  pattern="dd MM yy hh:mm a"  id="toDate" value="#{patientInvestigationController.toDate}"  >
+                        </p:calendar>
+
+                        <h:outputLabel value="Department"/>
+                        <p:autoComplete  id="acDept"
+                                         value="#{patientInvestigationController.department}"
+                                         completeMethod="#{departmentController.completeDept}"
+                                         var="dept"
+                                         itemLabel="#{dept.name}"
+                                         itemValue="#{dept}"
+                                         converter="dep">
+                        </p:autoComplete>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+
+                        <p:commandButton ajax="false" 
+                                         value="Process" 
+                                         action="#{patientInvestigationController.listSmsSentBills()}" >
+                        </p:commandButton>
+                        <p:commandButton value="Print Worksheets" ajax="false">
+                            <p:printer  target="dtF" />
+                        </p:commandButton>
+                        <p:commandButton value="Download as Excel" ajax="false">
+                            <p:dataExporter target="dtF" type="xls" fileName="sms" ></p:dataExporter>
+                        </p:commandButton>
+
+                    </h:panelGrid>
+                    <p:dataTable id="dtF" 
+                                 value="#{patientInvestigationController.smsSentBills}" 
+                                 var="smpIx" 
+                                 rowKey="#{smpIx.id}">
+
+                        <p:column headerText="Bill No"  styleClass="alignTop" >
+                            <h:outputLabel value="#{smpIx.insId}" >
+                            </h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Dept. No"  styleClass="alignTop" >
+                            <h:outputLabel value="#{smpIx.deptId}" >
+                            </h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Patient"  styleClass="alignTop" >
+                            <h:outputLabel value="#{smpIx.patient.person.nameWithTitle}" >
+                            </h:outputLabel>
+                            <h:outputLabel value=", " >
+                            </h:outputLabel>
+                            <h:outputLabel value="#{smpIx.patient.age}" >
+                            </h:outputLabel>
+                            <h:outputLabel value=", " >
+                            </h:outputLabel>
+                            <h:outputLabel value="#{smpIx.patient.person.sex}" >
+                            </h:outputLabel>
+                            <h:outputLabel value=", " >
+                            </h:outputLabel>
+                            <h:outputLabel value="#{smpIx.patient.person.phone}" >
+                            </h:outputLabel>
+                        </p:column>
+
+
+                        <p:column headerText="Phone"  styleClass="alignTop" >
+                            <h:outputLabel value="#{smpIx.patient.person.phone}" >
+                            </h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Sms Details"  styleClass="alignTop" >
+
+                            <table >
+                                <ui:repeat value="#{smpIx.sentSmses}" var="sms" >
+                                    <tr>
+                                        <td>
+                                            <p:outputLabel value="By " ></p:outputLabel>
+                                            <p:outputLabel value="#{sms.createdAt}" ></p:outputLabel>
+                                            <p:outputLabel value="#{sms.createdAt}" >
+                                                <f:convertDateTime pattern="dd MM yy hh:mm A" ></f:convertDateTime>
+                                            </p:outputLabel>
+
+                                            <p:outputLabel value="#{sms.createdAt}" >
+                                                <f:convertDateTime pattern="dd MM yy hh:mm A" ></f:convertDateTime>
+                                            </p:outputLabel>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+                </p:panel>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

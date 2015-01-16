@@ -166,49 +166,6 @@ public class PatientInvestigation implements Serializable {
     @OneToMany(mappedBy = "patientInvestigation")
     List<PatientReport> patientReports;
 
-    //Sms Info
-    private Boolean smsed = false;
-    @ManyToOne
-    private WebUser smsedUser;
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    private Date smsedAt;
-    @OneToMany(mappedBy = "patientInvestigation")
-    List<Sms> sentSmses;
-
-    public Boolean getSmsed() {
-        return smsed;
-    }
-
-    public void setSmsed(Boolean smsed) {
-        this.smsed = smsed;
-    }
-
-    public WebUser getSmsedUser() {
-        return smsedUser;
-    }
-
-    public void setSmsedUser(WebUser smsedUser) {
-        this.smsedUser = smsedUser;
-    }
-
-    public Date getSmsedAt() {
-        return smsedAt;
-    }
-
-    public void setSmsedAt(Date smsedAt) {
-        this.smsedAt = smsedAt;
-    }
-
-    public List<Sms> getSentSmses() {
-        if (sentSmses == null) {
-            sentSmses = new ArrayList<>();
-        }
-        return sentSmses;
-    }
-
-    public void setSentSmses(List<Sms> sentSmses) {
-        this.sentSmses = sentSmses;
-    }
 
     public List<PatientReport> getPatientReports() {
         return patientReports;

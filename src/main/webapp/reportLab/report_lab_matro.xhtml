@@ -14,20 +14,22 @@
 
                 <h:form>
 
-                    <h:panelGrid columns="4"  >
+                    <h:panelGrid columns="4" class="alignTop"  >
 
-
-                        <h:panelGrid columns="1" >
-                            <f:facet name="header">
-                                <p:outputLabel value="Lab Investigation" />
-                            </f:facet>
+                        <p:panel header="Summeries" styleClass="alignTop">
                             <p:commandButton styleClass="linkButton" ajax="false" value="Investigation Month End summery" action="report_lab_investigation_month_end_summery"/>                            
+                            <p:commandButton styleClass="linkButton" ajax="false" value="Report by Referring Doctor" action="report_lab_by_refering_doctor.xhtml"/>
+                        </p:panel>
+
+                        <p:panel header="Collecting Centre Summeries" styleClass="alignTop">
                             <p:commandButton styleClass="linkButton" ajax="false" value="Report by Collection Centre" action="report_lab_collection_centre.xhtml"/>
                             <p:commandButton styleClass="linkButton" ajax="false" value="Report by Collection Centre Count" action="report_lab_by_collection_centre_investigation_count.xhtml"/>                            
-                            <p:commandButton styleClass="linkButton" ajax="false" value="Report by Referring Doctor" action="report_lab_by_refering_doctor.xhtml"/>
-                             
+                        </p:panel>
 
-                        </h:panelGrid>
+                        <p:panel header="SMS Sending" styleClass="alignTop">
+                            <p:commandButton styleClass="linkButton" ajax="false" value="List SMS sent Bills" action="/lab/report_sms_sent_bills"/>
+                            <p:commandButton styleClass="linkButton" ajax="false" value="List of SMS" action="/lab/report_sms"/>
+                        </p:panel>
 
 
                     </h:panelGrid>

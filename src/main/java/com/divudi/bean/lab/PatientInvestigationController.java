@@ -12,13 +12,16 @@ import com.divudi.bean.common.SessionController;
 import com.divudi.bean.common.UtilityController;
 import com.divudi.bean.report.LabReportSearchByInstitutionController;
 import com.divudi.ejb.CommonFunctions;
+import com.divudi.entity.Bill;
 import com.divudi.entity.Department;
 import com.divudi.entity.Sms;
+import com.divudi.entity.WebUser;
 import com.divudi.entity.lab.Investigation;
 import com.divudi.entity.lab.InvestigationItem;
 import com.divudi.entity.lab.PatientInvestigation;
 import com.divudi.entity.lab.PatientReport;
 import com.divudi.entity.lab.ReportItem;
+import com.divudi.facade.BillFacade;
 import com.divudi.facade.InvestigationFacade;
 import com.divudi.facade.InvestigationItemFacade;
 import com.divudi.facade.PatientInvestigationFacade;
@@ -396,16 +399,16 @@ public class PatientInvestigationController implements Serializable {
         }
         try {
             System.out.println("trying to send the sms thread ");
-            SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(current);
+            SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(current.getBillItem().getBill(),getSessionController().getLoggedUser());
             System.out.println("trying to start");
             sendSms.start();
-            getCurrent().getSentSmses().add(sendSms.sms);
+            getCurrent().getBillItem().getBill().getSentSmses().add(sendSms.sms);
             System.out.println("Sending Sms Completed. ");
-            getCurrent().setSmsed(true);
-            getCurrent().setSmsedAt(new Date());
-            getCurrent().setSmsedUser(getSessionController().getLoggedUser());
+            getCurrent().getBillItem().getBill().setSmsed(true);
+            getCurrent().getBillItem().getBill().setSmsedAt(new Date());
+            getCurrent().getBillItem().getBill().setSmsedUser(getSessionController().getLoggedUser());
             getFacade().edit(current);
-                        UtilityController.addSuccessMessage("Sms send");
+            UtilityController.addSuccessMessage("Sms send");
         } catch (Exception e) {
             System.out.println("e = " + e);
             UtilityController.addErrorMessage("Error sending sms. " + e.getMessage());
@@ -418,16 +421,19 @@ public class PatientInvestigationController implements Serializable {
 
         Sms sms;
         private Thread t;
-        PatientInvestigation pi;
+        Bill bill;
+        WebUser webUser;
 
-        SendSmsOnSavingPatientReport(PatientInvestigation pi) {
-            this.pi = pi;
+        SendSmsOnSavingPatientReport(Bill pi, WebUser webUser) {
+            this.bill = pi;
+            this.webUser = webUser;
             System.out.println("pi = " + pi);
+            System.out.println("webuser = " + webUser);
         }
 
         public void run() {
             System.out.println("running the sending sms thread.");
-            if (pi == null) {
+            if (bill == null) {
                 System.out.println("pr is null ");
             }
             String url = "http://www.textit.biz/sendmsg/index.php";
@@ -436,15 +442,15 @@ public class PatientInvestigationController implements Serializable {
             String id = "94715812399";
             String pw = "5672";
 
-            String sendingNo = pi.getBillItem().getBill().getPatient().getPerson().getPhone();
+            String sendingNo = bill.getPatient().getPerson().getPhone();
             StringBuilder sb = new StringBuilder(sendingNo);
             sb.deleteCharAt(3);
             sendingNo = sb.toString();
 
             sms = new Sms();
             messageBody = "Your reports are ready. ";
-            messageBody = messageBody + pi.getBillItem().getBill().getDepartment().getAddress() + ". ";
-            messageBody = messageBody + pi.getBillItem().getBill().getInstitution().getWeb();
+            messageBody = messageBody + bill.getDepartment().getAddress() + ". ";
+            messageBody = messageBody + bill.getInstitution().getWeb();
 
             try {
                 System.out.println("id = " + id);
@@ -462,7 +468,8 @@ public class PatientInvestigationController implements Serializable {
                 sms.setUserId(id);
                 sms.setPassword(pw);
                 sms.setCreatedAt(new Date());
-                sms.setPatientInvestigation(pi);
+                sms.setCreater(webUser);
+                sms.setBill(bill);
                 sms.setSendingUrl(url);
                 sms.setSendingMessage(messageBody);
                 sms.setReceivedMessage(stringResponse.getBody());
@@ -586,6 +593,70 @@ public class PatientInvestigationController implements Serializable {
 
     public List<PatientInvestigation> getToReceive() {
         return toReceive;
+    }
+
+    @EJB
+    BillFacade billFacade;
+    @EJB
+    SmsFacade smsFacade;
+    List<Bill> smsSentBills;
+    List<Sms> smses;
+
+    public List<Bill> getSmsSentBills() {
+        return smsSentBills;
+    }
+
+    public List<Sms> getSmses() {
+        return smses;
+    }
+
+    public void listSentSmses() {
+        String temSql;
+        Map temMap = new HashMap();
+        if (department == null) {
+            temSql = "SELECT b FROM Sms b where "
+                    + " and b.createdAt between :fromDate and :toDate "
+                    + " order by b.id";
+            temMap.put("toDate", getToDate());
+            temMap.put("fromDate", getFromDate());
+        } else {
+            temSql = "SELECT b FROM Sms b where "
+                    + " and b.createdAt between :fromDate and :toDate "
+                    + " and b.bill.department =:d "
+                    + " order by b.id";
+            temMap.put("toDate", getToDate());
+            temMap.put("fromDate", getFromDate());
+            temMap.put("d", department);
+        }
+        smses = smsFacade.findBySQL(temSql, temMap, TemporalType.TIMESTAMP);
+    }
+
+    public void listSmsSentBills() {
+        System.out.println("listSmsSentBills");
+        String temSql;
+        Map temMap = new HashMap();
+        if (department == null) {
+            temSql = "SELECT b FROM Bill b where "
+                    + " b.retired=false "
+                    + " and b.smsed =true "
+                    + " and b.createdAt between :fromDate and :toDate "
+                    + " order by b.id";
+            temMap.put("toDate", getToDate());
+            temMap.put("fromDate", getFromDate());
+        } else {
+            temSql = "SELECT b FROM Bill b where "
+                    + " b.retired=false "
+                    + " and b.smsed =true "
+                    + " and b.createdAt between :fromDate and :toDate "
+                    + " and b.department =:d "
+                    + " order by b.id";
+            temMap.put("toDate", getToDate());
+            temMap.put("fromDate", getFromDate());
+            temMap.put("d", department);
+        }
+        System.out.println("temMap = " + temMap);
+        System.out.println("sql = " + temSql);
+        smsSentBills = billFacade.findBySQL(temSql, temMap, TemporalType.TIMESTAMP);
     }
 
     public void toPrintWorksheets() {

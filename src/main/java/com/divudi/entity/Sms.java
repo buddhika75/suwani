@@ -25,6 +25,8 @@ import javax.persistence.Temporal;
 public class Sms implements Serializable {
     @ManyToOne
     private PatientInvestigation patientInvestigation;
+    @ManyToOne
+    private Bill bill;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -55,6 +57,16 @@ public class Sms implements Serializable {
     private String retireComments;
     //DataEntry
 
+    public Bill getBill() {
+        return bill;
+    }
+
+    public void setBill(Bill bill) {
+        this.bill = bill;
+    }
+
+    
+    
     public PatientInvestigation getPatientInvestigation() {
         return patientInvestigation;
     }
