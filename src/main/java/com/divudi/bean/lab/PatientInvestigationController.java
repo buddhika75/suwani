@@ -28,6 +28,7 @@ import com.divudi.facade.PatientInvestigationFacade;
 import com.divudi.facade.PatientReportFacade;
 import com.divudi.facade.ReportItemFacade;
 import com.divudi.facade.SmsFacade;
+import com.divudi.facade.util.JsfUtil;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -449,6 +450,7 @@ public class PatientInvestigationController implements Serializable {
 
             sms = new Sms();
             messageBody = "Your reports are ready. ";
+            messageBody = messageBody + bill.getInstitution().getName() + ". ";
             messageBody = messageBody + bill.getDepartment().getAddress() + ". ";
             messageBody = messageBody + bill.getInstitution().getWeb();
 
@@ -473,8 +475,11 @@ public class PatientInvestigationController implements Serializable {
                 sms.setSendingUrl(url);
                 sms.setSendingMessage(messageBody);
                 sms.setReceivedMessage(stringResponse.getBody());
+                smsFacade.create(sms);
+                JsfUtil.addSuccessMessage("SMS sent.");
             } catch (Exception ex) {
                 System.out.println("ex = " + ex);
+                JsfUtil.addErrorMessage("SMS NOT sent. Error. " + ex.getMessage());
             }
 
         }
