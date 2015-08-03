@@ -57,6 +57,17 @@ public class PaymentScheme implements Serializable {
     boolean validForPayments;
     boolean validForBilledBills;
     boolean validForCrBills;
+    double discountPercentForPharmacy;
+
+    public double getDiscountPercentForPharmacy() {
+        return discountPercentForPharmacy;
+    }
+
+    public void setDiscountPercentForPharmacy(double discountPercentForPharmacy) {
+        this.discountPercentForPharmacy = discountPercentForPharmacy;
+    }
+    
+    
     
 //    @ManyToOne
 //    MembershipScheme membershipScheme;

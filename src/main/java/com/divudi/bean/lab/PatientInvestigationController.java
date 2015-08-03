@@ -393,108 +393,114 @@ public class PatientInvestigationController implements Serializable {
     @Inject
     private LabReportSearchByInstitutionController labReportSearchByInstitutionController;
 
+    @EJB
+    SmsFacade smsFacade;
+
+    public SmsFacade getSmsFacade() {
+        return smsFacade;
+    }
+
+    Sms sms;
+
+    @EJB
+    BillFacade billFacade;
+    
     public void sendSms() {
         if (current == null) {
             UtilityController.addErrorMessage("Nothing to send sms");
             return;
         }
-        try {
-            System.out.println("trying to send the sms thread ");
-            SendSmsOnSavingPatientReport sendSms = new SendSmsOnSavingPatientReport(current.getBillItem().getBill(),getSessionController().getLoggedUser());
-            System.out.println("trying to start");
-            sendSms.start();
-            getCurrent().getBillItem().getBill().getSentSmses().add(sendSms.sms);
-            System.out.println("Sending Sms Completed. ");
-            getCurrent().getBillItem().getBill().setSmsed(true);
-            getCurrent().getBillItem().getBill().setSmsedAt(new Date());
-            getCurrent().getBillItem().getBill().setSmsedUser(getSessionController().getLoggedUser());
-            getFacade().edit(current);
-            UtilityController.addSuccessMessage("Sms send");
-        } catch (Exception e) {
-            System.out.println("e = " + e);
-            UtilityController.addErrorMessage("Error sending sms. " + e.getMessage());
+
+        Bill bill = current.getBillItem().getBill();
+
+        System.out.println("running the sending sms.");
+        if (bill == null) {
+            System.out.println("pr is null ");
         }
+        String url = "http://www.textit.biz/sendmsg/index.php";
+        HttpResponse<String> stringResponse;
+        String messageBody;
+        String id = "94715812399";
+        String pw = "5672";
+
+        if (bill == null || bill.getPatient() == null || bill.getPatient().getPerson() == null || bill.getPatient().getPerson().getPhone() == null) {
+            return;
+        }
+
+        
+        
+        String sendingNo = bill.getPatient().getPerson().getPhone();
+        if(sendingNo.contains("077") || sendingNo.contains("076")
+                || sendingNo.contains("071")||sendingNo.contains("072")||
+                sendingNo.contains("075")||sendingNo.contains("078")){
+            System.err.println("sending no is " + sendingNo);
+        }else{
+            System.err.println("sending no is " + sendingNo + ". Returning as number is not valid");
+            return;
+        }
+        
+        StringBuilder sb = new StringBuilder(sendingNo);
+        sb.deleteCharAt(3);
+        sendingNo = sb.toString();
+
+        messageBody = "Reports ready. ";
+        messageBody = messageBody + bill.getInstitution().getName() + ". ";
+        messageBody = messageBody + bill.getDepartment().getAddress() + ". ";
+        messageBody = messageBody + bill.getInstitution().getWeb();
+
+        try {
+            System.out.println("id = " + id);
+            System.out.println("pw = " + pw);
+            System.out.println("sendingNo = " + sendingNo);
+            System.out.println("text = " + messageBody);
+
+            stringResponse = Unirest.post(url)
+                    .field("id", id)
+                    .field("pw", pw)
+                    .field("to", sendingNo)
+                    .field("text", messageBody)
+                    .asString();
+            System.out.println("stringResponse = " + stringResponse);
+
+        } catch (Exception ex) {
+            System.out.println("ex = " + ex);
+            return;
+        }
+
+        sms = new Sms();
+        sms.setUserId(id);
+        sms.setPassword(pw);
+        sms.setCreatedAt(new Date());
+        sms.setCreater(getSessionController().getLoggedUser());
+        sms.setBill(bill);
+        sms.setSendingUrl(url);
+        sms.setSendingMessage(messageBody);
+        
+        System.out.println("Updating current PtIx = " + getCurrent());
+        
+        System.out.println("SMS status before updating " + getCurrent().getBillItem().getBill().getSmsed());
+        
+        getCurrent().getBillItem().getBill().setSmsed(true);
+        getCurrent().getBillItem().getBill().setSmsedAt(new Date());
+        getCurrent().getBillItem().getBill().setSmsedUser(getSessionController().getLoggedUser());
+        getFacade().edit(current);
+        getCurrent().getBillItem().getBill().getSentSmses().add(sms);
+        
+        
+        System.out.println("SMS status aftr updating " + getCurrent().getBillItem().getBill().getSmsed());
+        
+        billFacade.edit(getCurrent().getBillItem().getBill());
+        
+        System.out.println("sms before saving = " + sms);
+        getSmsFacade().create(sms);
+        System.out.println("sms after saving " + sms);
+
+        
+        System.out.println("Sending Sms Completed. ");
+        
+        UtilityController.addSuccessMessage("Sms send");
 
         getLabReportSearchByInstitutionController().createPatientInvestigaationList();
-    }
-
-    class SendSmsOnSavingPatientReport implements Runnable {
-
-        Sms sms;
-        private Thread t;
-        Bill bill;
-        WebUser webUser;
-
-        SendSmsOnSavingPatientReport(Bill pi, WebUser webUser) {
-            this.bill = pi;
-            this.webUser = webUser;
-            System.out.println("pi = " + pi);
-            System.out.println("webuser = " + webUser);
-        }
-
-        public void run() {
-            System.out.println("running the sending sms thread.");
-            if (bill == null) {
-                System.out.println("pr is null ");
-            }
-            String url = "http://www.textit.biz/sendmsg/index.php";
-            HttpResponse<String> stringResponse;
-            String messageBody;
-            String id = "94715812399";
-            String pw = "5672";
-
-            String sendingNo = bill.getPatient().getPerson().getPhone();
-            StringBuilder sb = new StringBuilder(sendingNo);
-            sb.deleteCharAt(3);
-            sendingNo = sb.toString();
-
-            sms = new Sms();
-            messageBody = "Your reports are ready. ";
-            messageBody = messageBody + bill.getInstitution().getName() + ". ";
-            messageBody = messageBody + bill.getDepartment().getAddress() + ". ";
-            messageBody = messageBody + bill.getInstitution().getWeb();
-
-            try {
-                System.out.println("id = " + id);
-                System.out.println("pw = " + pw);
-                System.out.println("sendingNo = " + sendingNo);
-                System.out.println("text = " + messageBody);
-
-                stringResponse = Unirest.post(url)
-                        .field("id", id)
-                        .field("pw", pw)
-                        .field("to", sendingNo)
-                        .field("text", messageBody)
-                        .asString();
-                System.out.println("stringResponse = " + stringResponse);
-                sms.setUserId(id);
-                sms.setPassword(pw);
-                sms.setCreatedAt(new Date());
-                sms.setCreater(webUser);
-                sms.setBill(bill);
-                sms.setSendingUrl(url);
-                sms.setSendingMessage(messageBody);
-                sms.setReceivedMessage(stringResponse.getBody());
-                smsFacade.create(sms);
-                JsfUtil.addSuccessMessage("SMS sent.");
-            } catch (Exception ex) {
-                System.out.println("ex = " + ex);
-                JsfUtil.addErrorMessage("SMS NOT sent. Error. " + ex.getMessage());
-            }
-
-        }
-
-        @EJB
-        SmsFacade smsFacade;
-
-        public void start() {
-            System.out.println("Starting sending sms. this in in start");
-            if (t == null) {
-                t = new Thread(this);
-                t.start();
-            }
-        }
-
     }
 
     public void markAsSampled() {
@@ -600,10 +606,7 @@ public class PatientInvestigationController implements Serializable {
         return toReceive;
     }
 
-    @EJB
-    BillFacade billFacade;
-    @EJB
-    SmsFacade smsFacade;
+   
     List<Bill> smsSentBills;
     List<Sms> smses;
 
