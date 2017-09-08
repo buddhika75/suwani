@@ -559,7 +559,7 @@
                                                         <h:outputLabel value="#{dpr.approveAt}"  rendered="#{dpr.approved}" >
                                                             <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
                                                         </h:outputLabel>
-                                                        <p:graphicImage id="imgApproved" library="image/icon" name="approved_icon.png" 
+                                                        <p:graphicImage id="imgApproved" library="image" name="approved_icon.png" 
                                                                         style="height: 30px; width: 30px; #{dpr.approved ? '':'opacity: 0.1;'}" ></p:graphicImage>
                                                     </p:column>
                                                     <p:column headerText="Printed" >
@@ -567,7 +567,7 @@
                                                             <f:convertDateTime pattern="dd/MMM/yyyy - hh:mm a"/>
                                                         </h:outputLabel>
 
-                                                        <p:graphicImage id="imgPrinted" library="image/icon" name="print_ok.png" 
+                                                        <p:graphicImage id="imgPrinted" library="image" name="print_ok.png" 
                                                                         style="height: 30px; width: 30px;#{dpr.printed ? '':'opacity: 0.1;'}" ></p:graphicImage>
                                                     </p:column>
                                                 </p:dataTable>
