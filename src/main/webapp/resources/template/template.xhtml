@@ -15,30 +15,24 @@
         <h:outputStylesheet library="css" name="css1.css" />
         <h:outputStylesheet library="css" name="summery.css" />
         <h:outputStylesheet library="css" name="printing.css" />
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-167559394-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'UA-167559394-1');
+        </script>
     </h:head>
     <h:body  >
         <p:panel styleClass="fullSpread" >
             <p:growl id="publicGrowl" autoUpdate="true"  life="1600"/>
             <h:panelGroup >
                 <h:form>
-                    <script type="text/javascript" language="JavaScript">
-                        var $ = jQuery;
-                        $(document).ready(function() {
-                            $("input[id*='TimeStamp']").mask('99 99 9999 99 99 aa');
-                            $("input[id*='DateOnly']").mask('99 99 9999');
-                            $("input[id*='DateOnlyShort']").mask('99 99 99');
-                        });
 
-                        var formSubmitted = false;
-                        function onSubmitButton() {
-                            if (!formSubmitted) {
-                                formSubmitted = true;
-                            } else {
-                                // disable event propagation if form is already submitted
-                                event.preventDefault();
-                            }
-                        }
-                    </script>
 
                     <h:panelGroup >
                         <p:ajaxStatus style="width:64px;height:64px;position:fixed;right:5px;top:5px">  
@@ -52,7 +46,7 @@
                         </p:ajaxStatus>
 
                         <h:panelGroup rendered="#{sessionController.logged}" style="border: 1px solid;border-radius: 6px;" 
-                                 styleClass="nonPrintBlock" >
+                                      styleClass="nonPrintBlock" >
                             <f:facet name="header" >
                                 <h:outputLabel value="#{labels.topic}" />
                             </f:facet>
@@ -69,7 +63,7 @@
                                     <p:menuitem ajax="false" action="/opd_bill_awaiting_cancellation" value="Bill Awaiting For Cancel" rendered="#{webUserController.hasPrivilege('OpdCancel')}" ></p:menuitem>
                                     <p:menuitem ajax="false" action="/reportCashier/report_cashier" value="Summery" ></p:menuitem>
                                 </p:submenu>
-                          
+
 
                                 <p:submenu label="Lab"  rendered="#{webUserController.hasPrivilege('Lab')}">
                                     <p:menuitem  ajax="false"  action="/lab_bill_collecting_centre" value="Collecting Centre Billing" actionListener="#{labBillCollectingController.prepareNewBill}"  rendered="#{webUserController.hasPrivilege('LabBilling')}" ></p:menuitem>
@@ -80,7 +74,7 @@
                                     <p:menuitem  ajax="false"  action="/reportLab/report_lab_matro" value="Summeries" rendered="#{webUserController.hasPrivilege('Reports')}"  ></p:menuitem>
                                     <p:menuitem  ajax="false"  action="/lab_administration" value="Administration"  rendered="#{webUserController.hasPrivilege('Admin')}" ></p:menuitem>
                                 </p:submenu>
-                                
+
                                 <p:submenu label="Clinicals"  rendered="#{webUserController.hasPrivilege('Clinical')}">
                                     <p:menuitem ajax="false" action="/clinical/clinical_patient_for_receptionist" value="Patients"/>
                                     <p:menuitem ajax="false" action="/clinical/clinical_queue" value="Queue"/>
@@ -95,8 +89,8 @@
                                     <p:menuitem  ajax="false"  action="/credit/report_due_access" value="Dues and Access"  ></p:menuitem>
                                     <p:menuitem  ajax="false"  action="/dataAdmin/report_entered_data" value="Check Entered Data"  ></p:menuitem>
                                 </p:submenu>
-                                
-                                
+
+
                                 <p:submenu label="User"  >
                                     <p:menuitem  ajax="false"  action="/user_change_password" value="Change Password"  ></p:menuitem>
                                     <p:menuitem  ajax="false"  action="/user_preferances" value="Change Preferances"  ></p:menuitem>
@@ -204,8 +198,6 @@
                                             <p:inputText autocomplete="off"   value="#{sessionController.userName}"  style="text-align: left; margin: 5px; padding: 5px;" ></p:inputText>
                                             <h:outputLabel value="Password"  style="text-align: left; margin: 5px; padding: 5px;" ></h:outputLabel>
                                             <p:password value="#{sessionController.passord }"  style="text-align: left; margin: 5px; padding: 5px;" ></p:password>
-                                            <p:commandButton value="Public" 
-                                                            id="btnPublic" action="index" ajax="false" ></p:commandButton>
                                             <p:commandButton value="Login"
                                                              id="btnLogin"
                                                              action="#{sessionController.loginAction()}"
@@ -215,14 +207,6 @@
                                     </h:form>
                                 </h:panelGroup>
                             </h:panelGrid>
-                            <h:panelGroup>
-                                <iframe width="500" 
-                                        height="150" 
-                                        frameBorder="0"
-                                        src="http://localwebteam.com/index.php?option=com_local_web_team&amp;task=customerlist.getCustomerPendingPaymentList&amp;customer_id=79&amp;customer_code=79&amp;tmpl=component">
-                                    <p>Your browser does not support iframes.</p>
-                                </iframe>
-                            </h:panelGroup>
                         </p:panel>
                     </ui:insert>
                 </p:panel>

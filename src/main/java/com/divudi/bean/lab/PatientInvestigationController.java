@@ -11,7 +11,9 @@ package com.divudi.bean.lab;
 import com.divudi.bean.common.SessionController;
 import com.divudi.bean.common.UtilityController;
 import com.divudi.bean.report.LabReportSearchByInstitutionController;
+import com.divudi.data.MessageType;
 import com.divudi.ejb.CommonFunctions;
+import com.divudi.ejb.SmsManagerEjb;
 import com.divudi.entity.Bill;
 import com.divudi.entity.Department;
 import com.divudi.entity.Sms;
@@ -70,6 +72,8 @@ public class PatientInvestigationController implements Serializable {
     private PatientInvestigationFacade ejbFacade;
     @EJB
     PatientReportFacade prFacade;
+    @EJB
+    private SmsManagerEjb smsManagerEjb;
     List<PatientInvestigation> selectedItems;
     private PatientInvestigation current;
     Investigation currentInvestigation;
@@ -404,102 +408,66 @@ public class PatientInvestigationController implements Serializable {
 
     @EJB
     BillFacade billFacade;
-    
+
     public void sendSms() {
         if (current == null) {
             UtilityController.addErrorMessage("Nothing to send sms");
             return;
         }
-
         Bill bill = current.getBillItem().getBill();
-
-        System.out.println("running the sending sms.");
-        if (bill == null) {
-            System.out.println("pr is null ");
-        }
-        String url = "http://www.textit.biz/sendmsg/index.php";
-        HttpResponse<String> stringResponse;
-        String messageBody;
-        String id = "94715812399";
-        String pw = "5672";
-
         if (bill == null || bill.getPatient() == null || bill.getPatient().getPerson() == null || bill.getPatient().getPerson().getPhone() == null) {
+            JsfUtil.addErrorMessage("System Error");
             return;
         }
-
-        
-        
         String sendingNo = bill.getPatient().getPerson().getPhone();
-        if(sendingNo.contains("077") || sendingNo.contains("076")
-                || sendingNo.contains("071")||sendingNo.contains("072")||
-                sendingNo.contains("075")||sendingNo.contains("078")){
-            System.err.println("sending no is " + sendingNo);
-        }else{
-            System.err.println("sending no is " + sendingNo + ". Returning as number is not valid");
-            return;
-        }
-        
-        StringBuilder sb = new StringBuilder(sendingNo);
-        sb.deleteCharAt(3);
-        sendingNo = sb.toString();
-
-        messageBody = "Reports ready. ";
-        messageBody = messageBody + bill.getInstitution().getName() + ". ";
-        messageBody = messageBody + bill.getDepartment().getAddress() + ". ";
-        messageBody = messageBody + bill.getInstitution().getWeb();
-
-        try {
-            System.out.println("id = " + id);
-            System.out.println("pw = " + pw);
-            System.out.println("sendingNo = " + sendingNo);
-            System.out.println("text = " + messageBody);
-
-            stringResponse = Unirest.post(url)
-                    .field("id", id)
-                    .field("pw", pw)
-                    .field("to", sendingNo)
-                    .field("text", messageBody)
-                    .asString();
-            System.out.println("stringResponse = " + stringResponse);
-
-        } catch (Exception ex) {
-            System.out.println("ex = " + ex);
+        if (sendingNo.contains("077") || sendingNo.contains("076") || sendingNo.contains("070")
+                || sendingNo.contains("071") || sendingNo.contains("072")
+                || sendingNo.contains("075") || sendingNo.contains("078")) {
+        } else {
+            JsfUtil.addErrorMessage("Wrong Telephone Number");
             return;
         }
 
-        sms = new Sms();
-        sms.setUserId(id);
-        sms.setPassword(pw);
-        sms.setCreatedAt(new Date());
-        sms.setCreater(getSessionController().getLoggedUser());
-        sms.setBill(bill);
-        sms.setSendingUrl(url);
-        sms.setSendingMessage(messageBody);
-        
-        System.out.println("Updating current PtIx = " + getCurrent());
-        
-        System.out.println("SMS status before updating " + getCurrent().getBillItem().getBill().getSmsed());
-        
-        getCurrent().getBillItem().getBill().setSmsed(true);
-        getCurrent().getBillItem().getBill().setSmsedAt(new Date());
-        getCurrent().getBillItem().getBill().setSmsedUser(getSessionController().getLoggedUser());
-        getFacade().edit(current);
-        getCurrent().getBillItem().getBill().getSentSmses().add(sms);
-        
-        
-        System.out.println("SMS status aftr updating " + getCurrent().getBillItem().getBill().getSmsed());
-        
-        billFacade.edit(getCurrent().getBillItem().getBill());
-        
-        System.out.println("sms before saving = " + sms);
-        getSmsFacade().create(sms);
-        System.out.println("sms after saving " + sms);
+        Sms s = new Sms();
+        s.setBill(bill);
+        s.setCreatedAt(new Date());
+        s.setCreater(sessionController.getLoggedUser());
+        s.setDepartment(sessionController.getLoggedUser().getDepartment());
+        s.setInstitution(sessionController.getLoggedUser().getInstitution());
+        s.setPatientInvestigation(current);
+        s.setReceipientNumber(bill.getPatient().getPerson().getPhone());
 
-        
-        System.out.println("Sending Sms Completed. ");
-        
-        UtilityController.addSuccessMessage("Sms send");
+        String messageBody = "Your " +  current.getBillItem().getItem().getName() + " (Bill number " + bill.getInsId() + ") is ready for collection at "
+                + sessionController.getLoggedUser().getDepartment().getPrintingName() + ".";
 
+        s.setSendingMessage(messageBody);
+        s.setSentSuccessfully(true);
+        s.setSmsType(MessageType.LabReport);
+        getSmsFacade().create(s);
+
+        System.out.println("getSmsManagerEjb() = " + getSmsManagerEjb());
+        System.out.println("s.getReceipientNumber() = " + messageBody);
+        System.out.println("messageBody = " + s.getReceipientNumber());
+        System.out.println("s.getSendingMessage() = " + s.getSendingMessage());
+        
+        
+        boolean sent = getSmsManagerEjb().sendSms(s.getReceipientNumber(), s.getSendingMessage(),
+                "esmsusr_97u",
+                "Mobitel@123",
+                "0702450627");
+
+        if (sent) {
+            getCurrent().getBillItem().getBill().setSmsed(true);
+            getCurrent().getBillItem().getBill().setSmsedAt(new Date());
+            getCurrent().getBillItem().getBill().setSmsedUser(getSessionController().getLoggedUser());
+            getFacade().edit(current);
+            getCurrent().getBillItem().getBill().getSentSmses().add(s);
+            billFacade.edit(getCurrent().getBillItem().getBill());
+            UtilityController.addSuccessMessage("Sms send successfully.");
+        } else {
+            
+            JsfUtil.addErrorMessage("Sending SMS.");
+        }
         getLabReportSearchByInstitutionController().createPatientInvestigaationList();
     }
 
@@ -606,7 +574,6 @@ public class PatientInvestigationController implements Serializable {
         return toReceive;
     }
 
-   
     List<Bill> smsSentBills;
     List<Sms> smses;
 
@@ -862,6 +829,13 @@ public class PatientInvestigationController implements Serializable {
         this.labReportSearchByInstitutionController = labReportSearchByInstitutionController;
     }
 
+    public SmsManagerEjb getSmsManagerEjb() {
+        return smsManagerEjb;
+    }
+
+    
+    
+    
     /**
      *
      */
