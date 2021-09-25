@@ -47,7 +47,7 @@ import javax.servlet.http.HttpSessionListener;
 /**
  *
  * @author Dr. M. H. B. Ariyaratne, MBBS, PGIM Trainee for MSc(Biomedical
- Informatics)
+ * Informatics)
  */
 @Named
 @SessionScoped
@@ -72,7 +72,7 @@ public class SessionController implements Serializable, HttpSessionListener {
     Institution institution;
     @EJB
     private CashTransactionBean cashTransactionBean;
-    
+
     String billNo;
     String phoneNo;
     Boolean customerLogged;
@@ -101,14 +101,19 @@ public class SessionController implements Serializable, HttpSessionListener {
         this.customerLogged = customerLogged;
     }
 
-    
-    
     public void update() {
         getFacede().edit(getLoggedUser());
         getCashTransactionBean().updateDrawers();
     }
 
     public Department getDepartment() {
+        if (department == null) {
+            if (loggedUser != null) {
+                if (getLoggedUser().getDepartment() != null) {
+                    department = getLoggedUser().getDepartment();
+                }
+            }
+        }
         return department;
     }
 
@@ -139,10 +144,6 @@ public class SessionController implements Serializable, HttpSessionListener {
     public void setInstitution(Institution institution) {
         this.institution = institution;
     }
-
-   
-
-   
 
     public SecurityController getSecurityController() {
         return securityController;
@@ -297,7 +298,7 @@ public class SessionController implements Serializable, HttpSessionListener {
         WebUser user = getLoggedUser();
         if (!getSecurityController().matchPassword(passord, user.getWebUserPassword())) {
             UtilityController.addErrorMessage("The old password you entered is incorrect");
-            return ;
+            return;
         }
         if (!newPassword.equals(newPasswordConfirm)) {
             UtilityController.addErrorMessage("Password and Re-entered password are not maching");
@@ -308,7 +309,7 @@ public class SessionController implements Serializable, HttpSessionListener {
         uFacade.edit(user);
         //
         UtilityController.addSuccessMessage("Password changed");
-        
+
     }
 
     public void changeCurrentUserPassword() {
@@ -350,7 +351,7 @@ public class SessionController implements Serializable, HttpSessionListener {
 
     }
 
-   String loggedUserName;
+    String loggedUserName;
 
     public String getLoggedUserName() {
         return loggedUserName;
@@ -359,18 +360,15 @@ public class SessionController implements Serializable, HttpSessionListener {
     public void setLoggedUserName(String loggedUserName) {
         this.loggedUserName = loggedUserName;
     }
-   
-   
-    
+
     private boolean checkUsers() {
-   
-        
+
         String temSQL;
         temSQL = "SELECT u FROM WebUser u WHERE u.retired = false";
         List<WebUser> allUsers = getFacede().findBySQL(temSQL);
         for (WebUser u : allUsers) {
-            loggedUserName =getSecurityController().decrypt(u.getName());
-            if(loggedUserName==null){
+            loggedUserName = getSecurityController().decrypt(u.getName());
+            if (loggedUserName == null) {
                 loggedUserName = "";
             }
             if (loggedUserName.equalsIgnoreCase(userName)) {
@@ -394,29 +392,27 @@ public class SessionController implements Serializable, HttpSessionListener {
                     setRole(u.getRole());
                     UserPreference uf;
                     String sql;
-                    
-                    sql="select p from UserPreference p where p.webUser=:u";
+
+                    sql = "select p from UserPreference p where p.webUser=:u";
                     Map m = new HashMap();
                     m.put("u", u);
-                    uf=getUserPreferenceFacade().findFirstBySQL(sql, m);
-                    if(uf==null){
-                        uf=new UserPreference();
+                    uf = getUserPreferenceFacade().findFirstBySQL(sql, m);
+                    if (uf == null) {
+                        uf = new UserPreference();
                         uf.setWebUser(u);
                         getUserPreferenceFacade().create(uf);
                     }
                     setUserPreference(uf);
-                    
-                    sql="select p from UserPreference p where p.webUser is null";
-                    uf=getUserPreferenceFacade().findFirstBySQL(sql);
-                    if(uf==null){
-                        uf=new UserPreference();
+
+                    sql = "select p from UserPreference p where p.webUser is null";
+                    uf = getUserPreferenceFacade().findFirstBySQL(sql);
+                    if (uf == null) {
+                        uf = new UserPreference();
                         uf.setWebUser(null);
                         getUserPreferenceFacade().create(uf);
                     }
                     setApplicationPreference(applicationPreference);
-                    
-                    
-                    
+
                     recordLogin();
 
                     UtilityController.addSuccessMessage("Logged successfully");
@@ -426,8 +422,8 @@ public class SessionController implements Serializable, HttpSessionListener {
         }
         return false;
     }
-    
-    public void updateApplicationPreference(){
+
+    public void updateApplicationPreference() {
         getUserPreferenceFacade().edit(applicationPreference);
         JsfUtil.addSuccessMessage("Updated");
     }
@@ -826,6 +822,4 @@ public class SessionController implements Serializable, HttpSessionListener {
         this.applicationPreference = applicationPreference;
     }
 
-
-    
 }

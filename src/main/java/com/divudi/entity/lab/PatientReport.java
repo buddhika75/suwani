@@ -192,6 +192,15 @@ public class PatientReport implements Serializable {
         }
         return patientReportItemValues;
     }
+    
+    
+    public List<PatientReportItemValue> getPatientReportItemValuesWithoutSorting() {
+        if (patientReportItemValues == null) {
+            patientReportItemValues = new ArrayList<>();
+        }
+        return patientReportItemValues;
+    }
+    
 
     public void setPatientReportItemValues(List<PatientReportItemValue> patientReportItemValues) {
         this.patientReportItemValues = patientReportItemValues;

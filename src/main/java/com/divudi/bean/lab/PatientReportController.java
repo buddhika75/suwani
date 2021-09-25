@@ -515,11 +515,24 @@ public class PatientReportController implements Serializable {
             UtilityController.addErrorMessage("Nothing to save");
             return;
         }
-
+        System.out.println("Save patient report");
         getCurrentPtIx().setDataEntered(true);
-        currentPtIx.setDataEntryAt(Calendar.getInstance().getTime());
-        currentPtIx.setDataEntryUser(getSessionController().getLoggedUser());
-        currentPtIx.setDataEntryDepartment(getSessionController().getDepartment());
+        currentPtIx.setDataEntryAt(new Date());
+        if(getSessionController().getLoggedUser()!=null ){
+            currentPtIx.setDataEntryUser(getSessionController().getLoggedUser());
+            currentPatientReport.setDataEntryUser(getSessionController().getLoggedUser());
+            if(getSessionController().getDepartment()!=null){
+                currentPtIx.setDataEntryDepartment(getSessionController().getDepartment());
+            }
+            if(getSessionController().getLoggedUser().getDepartment()!=null){
+                currentPatientReport.setDataEntryDepartment(getSessionController().getLoggedUser().getDepartment());
+            }
+            if(getSessionController().getLoggedUser().getInstitution()!=null){
+                currentPatientReport.setDataEntryInstitution(getSessionController().getLoggedUser().getInstitution());
+            }
+        }
+        
+        
 
         //System.out.println("1. getPatientReportItemValues() = " + getPatientReportItemValues());
         //System.out.println("2. currentPatientReport.getReportItemValues() = " + currentPatientReport.getPatientReportItemValues());
@@ -527,14 +540,12 @@ public class PatientReportController implements Serializable {
         currentPatientReport.setDataEntered(Boolean.TRUE);
 
         currentPatientReport.setDataEntryAt(Calendar.getInstance().getTime());
-        currentPatientReport.setDataEntryDepartment(getSessionController().getLoggedUser().getDepartment());
-        currentPatientReport.setDataEntryInstitution(getSessionController().getLoggedUser().getInstitution());
-        currentPatientReport.setDataEntryUser(getSessionController().getLoggedUser());
+        
+        
+        
 
         getFacade().edit(currentPatientReport);
         getPiFacade().edit(currentPtIx);
-
-        
 
         UtilityController.addSuccessMessage("Saved");
     }

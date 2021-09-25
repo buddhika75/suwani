@@ -112,7 +112,8 @@
 
 
                             <h:outputText value="Value Type"/>
-                            <h:selectOneListbox id="cmbValueType" value="#{investigationItemController.current.ixItemValueType}" size="1" >
+                            <h:selectOneListbox id="cmbValueType" value="#{investigationItemController.current.ixItemValueType}" size="1" required="true" >
+                                <f:selectItem itemLabel="Select" ></f:selectItem>
                                 <f:selectItems value="#{enumController.investigationItemValueTypes}" ></f:selectItems>
                             </h:selectOneListbox>
 
